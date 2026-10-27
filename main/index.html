@@ -60,7 +60,7 @@ body {
   max-width: 1040px; margin: 0 auto;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
-  padding-block: 0 48px;
+  padding-block: 0 24px;
 }
 .narrow { max-width: 680px; margin: 0 auto; }
 h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; line-height: 1.45; margin: 0; }
@@ -76,14 +76,14 @@ p { margin: 0; }
 .bar {
   position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
   background: var(--bg); border-bottom: 1px solid var(--line);
-  margin-bottom: 28px;
+  margin-bottom: 14px;
 }
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
 .bar-in {
   max-width: 1040px; margin: 0 auto; display: flex; align-items: center; gap: 16px;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
-  padding-block: 10px;
+  padding-block: 8px;
 }
 .bar-name { font-family: var(--font-display); font-weight: 700; font-size: var(--step--1); letter-spacing: 0.06em; white-space: nowrap; }
 .prog { flex: 1; display: flex; align-items: center; gap: 12px; min-width: 0; }
@@ -117,7 +117,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 /* ボタン */
 .btn {
   font: inherit; font-weight: 700; font-size: var(--step-1);
-  border: 0; border-radius: var(--radius); padding: 12px 28px; min-height: 52px;
+  border: 0; border-radius: var(--radius); padding: 10px 28px; min-height: 48px;
   background: var(--accent); color: var(--accent-ink); cursor: pointer;
 }
 .btn:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
@@ -125,30 +125,31 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .btn-row { display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap; align-items: center; }
 
 /* 判定の画面 */
-.task-head { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
-details.ref { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
-details.ref summary { cursor: pointer; padding: 10px 16px; font-size: var(--step--1); color: var(--muted); }
-details.ref .problem { margin: 0 16px 16px; border: 0; padding: 0; }
-.notice { background: var(--warn-bg); color: var(--warn-ink); border-radius: var(--radius); padding: 12px 16px; font-weight: 700; }
-.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.task-head { display: flex; flex-direction: column; gap: 8px; }
+.task-head:has(> :not([hidden])) { margin-bottom: 12px; }
+.ref .problem { font-size: var(--step--1); }
+.bar-btn { font: inherit; font-size: var(--step--1); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 14px; cursor: pointer; white-space: nowrap; }
+.bar-btn[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
+.bar-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.notice { background: var(--warn-bg); color: var(--warn-ink); border-radius: var(--radius); padding: 8px 14px; font-weight: 700; font-size: 0.95rem; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .card {
   min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
-  padding: 22px clamp(18px, 2.4vw, 28px) 24px; display: flex; flex-direction: column; gap: 10px;
+  padding: 14px clamp(16px, 2vw, 22px) 16px; display: flex; flex-direction: column; gap: 4px;
 }
 .card .tag { font-family: var(--font-display); font-weight: 700; font-size: var(--step--1); letter-spacing: 0.12em; color: var(--muted); }
-.card h3 { font-family: var(--font-body); font-size: var(--step-1); font-weight: 700; line-height: 1.6; }
-.card p { line-height: 1.95; overflow-wrap: anywhere; }
-.qs { display: flex; flex-direction: column; gap: 10px; margin-top: 22px; }
-.q {
-  border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface);
-  margin: 0; padding: 12px 18px; display: grid; grid-template-columns: 1fr auto; gap: 10px 20px; align-items: center;
-}
-.q legend { display: contents; }
-.q .qtext { min-width: 0; }
-.q .qlabel { font-family: var(--font-display); font-weight: 700; color: var(--accent); font-size: var(--step--1); letter-spacing: 0.06em; display: block; }
-.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; min-width: 240px; }
+.card h3 { font-family: var(--font-body); font-size: 1.0625rem; font-weight: 700; line-height: 1.5; }
+.card p { font-size: 0.96875rem; line-height: 1.8; overflow-wrap: anywhere; }
+.qs { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+/* 4問を1枚の表に。左に問い、右に 案A／案B */
+.qgrid { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.q { display: grid; grid-template-columns: 1fr auto; gap: 8px 16px; align-items: center; padding: 5px 6px 5px 16px; }
+.q + .q { border-top: 1px solid var(--line); }
+.qt { min-width: 0; display: flex; align-items: baseline; gap: 12px; font-size: 0.96875rem; }
+.ql { font-family: var(--font-display); font-weight: 700; color: var(--accent); white-space: nowrap; min-width: 3.5em; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 220px; }
 .opt {
-  font: inherit; font-weight: 700; min-height: 48px; padding: 8px 16px; border-radius: 8px; cursor: pointer;
+  font: inherit; font-weight: 700; min-height: 38px; padding: 5px 12px; border-radius: 8px; cursor: pointer;
   border: 1.5px solid var(--line); background: var(--bg); color: var(--ink);
 }
 .opt[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
@@ -175,8 +176,9 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
 
 @media (max-width: 760px) {
   .pair { grid-template-columns: 1fr; }
-  .q { grid-template-columns: 1fr; }
-  .seg { min-width: 0; }
+  .seg { width: 132px; }
+  .qt { flex-direction: column; gap: 0; }
+  .q { padding: 6px 6px 6px 12px; gap: 8px; }
   .bar-name { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -192,6 +194,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
       <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
       <span class="prog-num" id="prog-num"></span>
     </div>
+    <button type="button" class="bar-btn" id="btn-problem" aria-controls="ref" aria-expanded="false" hidden>お題を見る</button>
     <span class="demo-chip" id="demo-chip" hidden>プレビュー：回答は保存されません</span>
   </div>
 </div>
@@ -242,10 +245,9 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
   <!-- 3. 判定（練習と本番で共通） -->
   <section id="s-trial" hidden>
     <div class="task-head">
-      <details class="ref" id="ref">
-        <summary>お題を見る</summary>
+      <div class="ref" id="ref" hidden>
         <div class="problem" id="problem-ref"></div>
-      </details>
+      </div>
       <p class="notice" id="notice" hidden></p>
     </div>
     <div id="trial-body">
@@ -262,34 +264,36 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
         </article>
       </div>
       <div class="qs">
-        <fieldset class="q">
-          <legend><span class="qtext"><span class="qlabel">新しさ</span>より見たことのない発想なのは？</span></legend>
-          <div class="seg" role="group" aria-label="新しさ">
-            <button type="button" class="opt" data-q="q1" data-side="A" aria-pressed="false">案A</button>
-            <button type="button" class="opt" data-q="q1" data-side="B" aria-pressed="false">案B</button>
+        <div class="qgrid">
+          <div class="q" role="group" aria-label="新しさ">
+            <span class="qt"><b class="ql">新しさ</b><span>より見たことのない発想なのは？</span></span>
+            <span class="seg">
+              <button type="button" class="opt" data-q="q1" data-side="A" aria-pressed="false">案A</button>
+              <button type="button" class="opt" data-q="q1" data-side="B" aria-pressed="false">案B</button>
+            </span>
           </div>
-        </fieldset>
-        <fieldset class="q">
-          <legend><span class="qtext"><span class="qlabel">実現性</span>実際に成り立ちそうなのは？</span></legend>
-          <div class="seg" role="group" aria-label="実現性">
-            <button type="button" class="opt" data-q="q3" data-side="A" aria-pressed="false">案A</button>
-            <button type="button" class="opt" data-q="q3" data-side="B" aria-pressed="false">案B</button>
+          <div class="q" role="group" aria-label="実現性">
+            <span class="qt"><b class="ql">実現性</b><span>実際に成り立ちそうなのは？</span></span>
+            <span class="seg">
+              <button type="button" class="opt" data-q="q3" data-side="A" aria-pressed="false">案A</button>
+              <button type="button" class="opt" data-q="q3" data-side="B" aria-pressed="false">案B</button>
+            </span>
           </div>
-        </fieldset>
-        <fieldset class="q">
-          <legend><span class="qtext"><span class="qlabel">魅力</span>もっと詳しく聞いてみたいのは？</span></legend>
-          <div class="seg" role="group" aria-label="魅力">
-            <button type="button" class="opt" data-q="q4" data-side="A" aria-pressed="false">案A</button>
-            <button type="button" class="opt" data-q="q4" data-side="B" aria-pressed="false">案B</button>
+          <div class="q" role="group" aria-label="魅力">
+            <span class="qt"><b class="ql">魅力</b><span>もっと詳しく聞いてみたいのは？</span></span>
+            <span class="seg">
+              <button type="button" class="opt" data-q="q4" data-side="A" aria-pressed="false">案A</button>
+              <button type="button" class="opt" data-q="q4" data-side="B" aria-pressed="false">案B</button>
+            </span>
           </div>
-        </fieldset>
-        <fieldset class="q">
-          <legend><span class="qtext"><span class="qlabel">総合</span>より良いアイデアだと思うのは？</span></legend>
-          <div class="seg" role="group" aria-label="総合">
-            <button type="button" class="opt" data-q="q2" data-side="A" aria-pressed="false">案A</button>
-            <button type="button" class="opt" data-q="q2" data-side="B" aria-pressed="false">案B</button>
+          <div class="q" role="group" aria-label="総合">
+            <span class="qt"><b class="ql">総合</b><span>より良いアイデアだと思うのは？</span></span>
+            <span class="seg">
+              <button type="button" class="opt" data-q="q2" data-side="A" aria-pressed="false">案A</button>
+              <button type="button" class="opt" data-q="q2" data-side="B" aria-pressed="false">案B</button>
+            </span>
           </div>
-        </fieldset>
+        </div>
         <div class="btn-row">
           <span class="muted small" id="trial-msg" role="status"></span>
           <button class="btn" id="btn-next" disabled>次へ</button>
@@ -415,6 +419,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
   var screens = ["s-consent", "s-intro", "s-trial", "s-after-practice", "s-survey", "s-done", "s-error"];
   function show(id) {
     screens.forEach(function (s) { $(s).hidden = s !== id; });
+    $("btn-problem").hidden = id !== "s-trial";
     window.scrollTo(0, 0);
   }
   function setProgress() {
@@ -456,7 +461,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
     document.querySelectorAll(".opt").forEach(function (o) { o.setAttribute("aria-pressed", "false"); });
     $("btn-next").disabled = true;
     $("trial-msg").textContent = "";
-    $("ref").open = false;
+    $("ref").hidden = true; $("btn-problem").setAttribute("aria-expanded", "false");
     var body = $("trial-body"); body.classList.remove("fade"); void body.offsetWidth; body.classList.add("fade");
     cur = {left: a, right: b, chk: chk || "", q1: null, q2: null, q3: null, q4: null,
            q1_ms: null, q2_ms: null, q3_ms: null, q4_ms: null, changes: 0,
@@ -545,6 +550,11 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
     render(S.practice.a, S.practice.b, null);
   });
   $("btn-main").addEventListener("click", function () { next(); });
+  $("btn-problem").addEventListener("click", function () {
+    var open = $("ref").hidden;
+    $("ref").hidden = !open;
+    $("btn-problem").setAttribute("aria-expanded", open ? "true" : "false");
+  });
 
   // ---- 最後の質問 → 完了
   function surveyReady() {
@@ -580,6 +590,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
   $("demo-chip").hidden = LIVE;
   if (GAS && !API_URL) call("contact").then(function (c) { $("contact").textContent = c; }, function () {});
   if (LIVE && load("hep_consented", null)) begin(true);   // 同意済みで途中だった人は、そのまま続きへ
+  if (!LIVE && location.hash === "#trial") begin(false).then(function () { idx = 0; next(); });
 })();
 </script>
 
