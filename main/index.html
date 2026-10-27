@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<script>window.API_URL = "https://script.google.com/macros/s/AKfycbyUYt4-X9Io4qpRJrfnpaHMeKzjwItM35Kssor7ZSB4qxa7dIc8UMW_2teLQ4YAQ6Jn/exec"; window.STUDY_CONTACT = "〔要記入：研究室名・実施責任者名・メールアドレス〕";</script>
+</head>
+<body>
+<title>アイデア比較調査</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap">
+<style>
+/* Layout: 読む面（2枚の案を左右に、狭い画面では上下に）と、答える面（4問＋次へ）を縦に分ける。
+   2枚の案は色・大きさ・装飾をすべて同じにし、見た目で一方を有利にしない。 */
+:root {
+  --bg: #eef1f4;
+  --surface: #ffffff;
+  --ink: #18202b;
+  --muted: #586473;
+  --line: #d3d9e1;
+  --accent: #1d5a86;
+  --accent-ink: #ffffff;
+  --accent-soft: #e2edf6;
+  --warn-bg: #fff4d6;
+  --warn-ink: #5c4300;
+  --font-display: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --font-body: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+  --step--1: 0.8125rem;
+  --step-0: 1rem;
+  --step-1: 1.125rem;
+  --step-2: 1.375rem;
+  --step-3: 1.75rem;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11161d; --surface: #19202a; --ink: #e5e9ef; --muted: #9aa6b5; --line: #2c3542;
+    --accent: #79b4df; --accent-ink: #0d1520; --accent-soft: #1c2c3c; --warn-bg: #3a3011; --warn-ink: #f3dc9a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11161d; --surface: #19202a; --ink: #e5e9ef; --muted: #9aa6b5; --line: #2c3542;
+  --accent: #79b4df; --accent-ink: #0d1520; --accent-soft: #1c2c3c; --warn-bg: #3a3011; --warn-ink: #f3dc9a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+img { max-width: 100%; }
+body {
+  background: var(--bg); color: var(--ink); margin: 0;
+  font-family: var(--font-body); font-size: var(--step-0); line-height: 1.8;
+  -webkit-text-size-adjust: 100%;
+}
+.wrap {
+  max-width: 1040px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+}
+.narrow { max-width: 680px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; line-height: 1.45; margin: 0; }
+h1 { font-size: var(--step-3); font-weight: 700; }
+h2 { font-size: var(--step-2); font-weight: 700; }
+p { margin: 0; }
+.stack { display: flex; flex-direction: column; gap: 20px; }
+.stack-s { display: flex; flex-direction: column; gap: 10px; }
+.muted { color: var(--muted); }
+.small { font-size: var(--step--1); }
+
+/* 上部の帯：調査名と進み具合 */
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--bg); border-bottom: 1px solid var(--line);
+  margin-bottom: 28px;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.bar-in {
+  max-width: 1040px; margin: 0 auto; display: flex; align-items: center; gap: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 10px;
+}
+.bar-name { font-family: var(--font-display); font-weight: 700; font-size: var(--step--1); letter-spacing: 0.06em; white-space: nowrap; }
+.prog { flex: 1; display: flex; align-items: center; gap: 12px; min-width: 0; }
+.prog-track { flex: 1; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.prog-fill { height: 100%; width: 0; background: var(--accent); transition: width 0.3s ease; }
+.prog-num { font-size: var(--step--1); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.demo-chip {
+  font-size: var(--step--1); padding: 2px 10px; border-radius: 999px;
+  background: var(--warn-bg); color: var(--warn-ink); white-space: nowrap;
+}
+
+/* はじめに・進め方 */
+.lead { font-size: var(--step-1); }
+.facts { display: grid; grid-template-columns: auto 1fr; gap: 10px 20px; margin: 0; padding: 18px 0; border-block: 1px solid var(--line); }
+.facts dt { color: var(--muted); font-size: var(--step--1); padding-top: 3px; white-space: nowrap; }
+.facts dd { margin: 0; min-width: 0; }
+.label { font-size: var(--step--1); color: var(--muted); letter-spacing: 0.04em; }
+.tips { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 6px; color: var(--muted); }
+.doc { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px clamp(18px, 4vw, 36px); }
+.doc ul { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 8px; }
+.doc dt { font-weight: 700; }
+.doc dd { margin: 0 0 12px; }
+.problem { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 20px; }
+.problem-title { font-weight: 700; margin-bottom: 6px; }
+.problem p + p { margin-top: 8px; }
+.qdef { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; align-items: baseline; }
+.qdef .qn { font-family: var(--font-display); font-weight: 700; color: var(--accent); white-space: nowrap; }
+.check { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+.check input { width: 20px; height: 20px; margin-top: 4px; accent-color: var(--accent); flex: none; }
+
+/* ボタン */
+.btn {
+  font: inherit; font-weight: 700; font-size: var(--step-1);
+  border: 0; border-radius: var(--radius); padding: 12px 28px; min-height: 52px;
+  background: var(--accent); color: var(--accent-ink); cursor: pointer;
+}
+.btn:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
+.btn:focus-visible, .opt:focus-visible, summary:focus-visible, textarea:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.btn-row { display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+/* 判定の画面 */
+.task-head { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
+details.ref { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+details.ref summary { cursor: pointer; padding: 10px 16px; font-size: var(--step--1); color: var(--muted); }
+details.ref .problem { margin: 0 16px 16px; border: 0; padding: 0; }
+.notice { background: var(--warn-bg); color: var(--warn-ink); border-radius: var(--radius); padding: 12px 16px; font-weight: 700; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.card {
+  min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 22px clamp(18px, 2.4vw, 28px) 24px; display: flex; flex-direction: column; gap: 10px;
+}
+.card .tag { font-family: var(--font-display); font-weight: 700; font-size: var(--step--1); letter-spacing: 0.12em; color: var(--muted); }
+.card h3 { font-family: var(--font-body); font-size: var(--step-1); font-weight: 700; line-height: 1.6; }
+.card p { line-height: 1.95; overflow-wrap: anywhere; }
+.qs { display: flex; flex-direction: column; gap: 10px; margin-top: 22px; }
+.q {
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface);
+  margin: 0; padding: 12px 18px; display: grid; grid-template-columns: 1fr auto; gap: 10px 20px; align-items: center;
+}
+.q legend { display: contents; }
+.q .qtext { min-width: 0; }
+.q .qlabel { font-family: var(--font-display); font-weight: 700; color: var(--accent); font-size: var(--step--1); letter-spacing: 0.06em; display: block; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; min-width: 240px; }
+.opt {
+  font: inherit; font-weight: 700; min-height: 48px; padding: 8px 16px; border-radius: 8px; cursor: pointer;
+  border: 1.5px solid var(--line); background: var(--bg); color: var(--ink);
+}
+.opt[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.opt:hover:not([aria-pressed="true"]) { border-color: var(--accent); }
+.fade { animation: fade 0.25s ease; }
+@keyframes fade { from { opacity: 0.35; } to { opacity: 1; } }
+
+/* 終わり */
+.code {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: var(--step-3); letter-spacing: 0.16em;
+  background: var(--accent-soft); color: var(--ink); border-radius: var(--radius); padding: 14px 20px; text-align: center;
+  user-select: all; font-variant-numeric: tabular-nums;
+}
+.radios { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+.radios label { display: flex; gap: 8px; align-items: center; cursor: pointer; }
+.radios input { accent-color: var(--accent); width: 18px; height: 18px; }
+textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(--line); border-radius: 8px; padding: 10px; background: var(--bg); color: var(--ink); }
+
+@media (max-width: 760px) {
+  .pair { grid-template-columns: 1fr; }
+  .q { grid-template-columns: 1fr; }
+  .seg { min-width: 0; }
+  .bar-name { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fade { animation: none; }
+  .prog-fill { transition: none; }
+}
+</style>
+
+<div class="bar" id="bar">
+  <div class="bar-in">
+    <span class="bar-name">アイデア比較調査</span>
+    <div class="prog" id="prog" hidden>
+      <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+      <span class="prog-num" id="prog-num"></span>
+    </div>
+    <span class="demo-chip" id="demo-chip" hidden>プレビュー：回答は保存されません</span>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <!-- 1. はじめに -->
+  <section id="s-consent" class="narrow stack">
+    <h1>アイデア比較調査</h1>
+    <p class="lead">2つのビジネスアイデアを読み比べて、よいと思うほうを選んでください。</p>
+    <dl class="facts">
+      <dt>内容</dt><dd>アイデア2つの組を <b><span id="n-trials">19</span>組</b>（はじめに練習1組）</dd>
+      <dt>時間</dt><dd>約12分</dd>
+      <dt>回答</dt><dd>匿名です。研究発表で統計としてのみ使います。途中でやめてもかまいません。</dd>
+      <dt>問い合わせ</dt><dd id="contact"></dd>
+    </dl>
+    <label class="check"><input type="checkbox" id="agree"><span>18歳以上で、調査への協力に同意します</span></label>
+    <div class="btn-row">
+      <span class="muted small" id="consent-msg" role="status"></span>
+      <button class="btn" id="btn-consent" disabled>始める</button>
+    </div>
+  </section>
+
+  <!-- 2. 進め方 -->
+  <section id="s-intro" class="narrow stack" hidden>
+    <h1>進め方</h1>
+    <div class="stack-s">
+      <p class="label">お題</p>
+      <div class="problem" id="problem-intro"></div>
+    </div>
+    <div class="stack-s">
+      <p class="label">4つの質問に、案Aか案Bで答えます</p>
+      <div class="qdef">
+        <span class="qn">新しさ</span><span>どちらが、より見たことのない発想か</span>
+        <span class="qn">実現性</span><span>どちらが、実際に成り立ちそうか</span>
+        <span class="qn">魅力</span><span>どちらの話を、もっと詳しく聞いてみたいか</span>
+        <span class="qn">総合</span><span>どちらが、より良いアイデアだと思うか</span>
+      </div>
+    </div>
+    <ul class="tips">
+      <li>正解はありません。迷ったら、少しでも当てはまるほうを選んでください。</li>
+      <li>文章のうまさではなく、アイデアの中身で選んでください。</li>
+      <li>途中に、選ぶ案を指定する確認問題が2つあります。</li>
+    </ul>
+    <div class="btn-row"><button class="btn" id="btn-intro">練習する</button></div>
+  </section>
+
+  <!-- 3. 判定（練習と本番で共通） -->
+  <section id="s-trial" hidden>
+    <div class="task-head">
+      <details class="ref" id="ref">
+        <summary>お題を見る</summary>
+        <div class="problem" id="problem-ref"></div>
+      </details>
+      <p class="notice" id="notice" hidden></p>
+    </div>
+    <div id="trial-body">
+      <div class="pair">
+        <article class="card" aria-labelledby="ta">
+          <span class="tag">案A</span>
+          <h3 id="ta"></h3>
+          <p id="ba"></p>
+        </article>
+        <article class="card" aria-labelledby="tb">
+          <span class="tag">案B</span>
+          <h3 id="tb"></h3>
+          <p id="bb"></p>
+        </article>
+      </div>
+      <div class="qs">
+        <fieldset class="q">
+          <legend><span class="qtext"><span class="qlabel">新しさ</span>より見たことのない発想なのは？</span></legend>
+          <div class="seg" role="group" aria-label="新しさ">
+            <button type="button" class="opt" data-q="q1" data-side="A" aria-pressed="false">案A</button>
+            <button type="button" class="opt" data-q="q1" data-side="B" aria-pressed="false">案B</button>
+          </div>
+        </fieldset>
+        <fieldset class="q">
+          <legend><span class="qtext"><span class="qlabel">実現性</span>実際に成り立ちそうなのは？</span></legend>
+          <div class="seg" role="group" aria-label="実現性">
+            <button type="button" class="opt" data-q="q3" data-side="A" aria-pressed="false">案A</button>
+            <button type="button" class="opt" data-q="q3" data-side="B" aria-pressed="false">案B</button>
+          </div>
+        </fieldset>
+        <fieldset class="q">
+          <legend><span class="qtext"><span class="qlabel">魅力</span>もっと詳しく聞いてみたいのは？</span></legend>
+          <div class="seg" role="group" aria-label="魅力">
+            <button type="button" class="opt" data-q="q4" data-side="A" aria-pressed="false">案A</button>
+            <button type="button" class="opt" data-q="q4" data-side="B" aria-pressed="false">案B</button>
+          </div>
+        </fieldset>
+        <fieldset class="q">
+          <legend><span class="qtext"><span class="qlabel">総合</span>より良いアイデアだと思うのは？</span></legend>
+          <div class="seg" role="group" aria-label="総合">
+            <button type="button" class="opt" data-q="q2" data-side="A" aria-pressed="false">案A</button>
+            <button type="button" class="opt" data-q="q2" data-side="B" aria-pressed="false">案B</button>
+          </div>
+        </fieldset>
+        <div class="btn-row">
+          <span class="muted small" id="trial-msg" role="status"></span>
+          <button class="btn" id="btn-next" disabled>次へ</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. 練習のあと -->
+  <section id="s-after-practice" class="narrow stack" hidden>
+    <h1>練習はここまでです</h1>
+    <p>本番は<span id="n-trials-2">19</span>組です。途中で閉じても、同じ端末で開き直せば続きから再開できます。</p>
+    <div class="btn-row"><button class="btn" id="btn-main">本番へ</button></div>
+  </section>
+
+  <!-- 5. 最後の質問 -->
+  <section id="s-survey" class="narrow stack" hidden>
+    <h1>最後に2つだけ</h1>
+    <div class="stack-s">
+      <p><b>読んだ案の中に、前に見たことのある案はありましたか</b></p>
+      <div class="radios" id="seen">
+        <label><input type="radio" name="seen" value="no" id="seen-no">なかった</label>
+        <label><input type="radio" name="seen" value="yes" id="seen-yes">あった</label>
+        <label><input type="radio" name="seen" value="unsure" id="seen-unsure">わからない</label>
+      </div>
+    </div>
+    <div class="stack-s">
+      <p><b>ビジネスコンテストやアイデア審査に関わったことはありますか</b></p>
+      <div class="radios" id="exp">
+        <label><input type="radio" name="exp" value="yes" id="exp-yes">ある</label>
+        <label><input type="radio" name="exp" value="no" id="exp-no">ない</label>
+      </div>
+    </div>
+    <div class="stack-s">
+      <label for="comment"><b>感想</b><span class="muted">（任意）</span></label>
+      <textarea id="comment" maxlength="1000"></textarea>
+    </div>
+    <div class="btn-row">
+      <span class="muted small" id="survey-msg" role="status"></span>
+      <button class="btn" id="btn-finish" disabled>送信</button>
+    </div>
+  </section>
+
+  <!-- 6. 完了 -->
+  <section id="s-done" class="narrow stack" hidden>
+    <h1>ありがとうございました</h1>
+    <p>回答を記録しました。完了の確認が必要な場合は、このコードをお伝えください。</p>
+    <div class="code" id="code"></div>
+    <p id="debrief" class="muted small"></p>
+  </section>
+
+  <!-- 接続できないとき -->
+  <section id="s-error" class="narrow stack" hidden>
+    <h1>接続できませんでした</h1>
+    <p id="error-msg">通信状況を確かめて、もう一度お試しください。ここまでの回答は端末に残っています。</p>
+    <div class="btn-row"><button class="btn" id="btn-retry">もう一度試す</button></div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---- 保存先：Apps Script 上では google.script.run、それ以外（プレビュー）では保存しない
+  // 保存先は3通り。静的なページから Apps Script へ送る（window.API_URL）、Apps Script が配るページ（google.script.run）、
+  // どちらでもなければプレビューで、何も保存しない
+  var API_URL = window.API_URL || "";
+  var GAS = typeof google !== "undefined" && google.script && google.script.run;
+  var LIVE = !!(API_URL || GAS);
+  function post(body) {
+    return fetch(API_URL, {method: "POST", body: JSON.stringify(body), credentials: "omit",
+                           headers: {"Content-Type": "text/plain;charset=utf-8"}})
+      .then(function (r) { return r.json(); })
+      .then(function (j) { if (!j.ok) throw new Error(j.error); return j.data; });
+  }
+  function call(fn) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return new Promise(function (resolve, reject) {
+      var r = google.script.run.withSuccessHandler(resolve).withFailureHandler(reject);
+      r[fn].apply(r, args);
+    });
+  }
+  var api = API_URL ? {
+    start: function (cid) { return post({action: "start", client_id: cid, ua: navigator.userAgent, screen: screen.width + "x" + screen.height}); },
+    record: function (row) { return post({action: "record", row: row}); },
+    finish: function (sid, survey) { return post({action: "finish", session_id: sid, survey: survey}); }
+  } : GAS ? {
+    start: function (cid) { return call("startSession", cid, navigator.userAgent, screen.width + "x" + screen.height); },
+    record: function (row) { return call("recordTrial", row); },
+    finish: function (sid, survey) { return call("finishSession", sid, survey); }
+  } : {
+    start: function () {
+      var s = window.DEMO_STUDY;
+      return Promise.resolve({session: "demo", phase: s.phase, problem: s.problem, practice: s.practice,
+                              debrief: s.debrief, items: s.items, packet: s.packets[0], done: []});
+    },
+    record: function () { return Promise.resolve(true); },
+    finish: function () { return Promise.resolve({code: "DEMO0000"}); }
+  };
+
+  // ---- 端末に残すもの（読めなくても動くように try で囲む）
+  function load(k, d) { try { var v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }
+  function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  var cid = load("hep_client", null);
+  if (!cid) { cid = "c" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); save("hep_client", cid); }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var S = null;            // サーバーから受け取った束
+  var idx = 0;             // 本番の何組目か（0 から）
+  var practice = false;
+  var cur = null;          // 表示中の組の記録
+  var pending = load("hep_pending", []);
+  var flushing = false;
+
+  var screens = ["s-consent", "s-intro", "s-trial", "s-after-practice", "s-survey", "s-done", "s-error"];
+  function show(id) {
+    screens.forEach(function (s) { $(s).hidden = s !== id; });
+    window.scrollTo(0, 0);
+  }
+  function setProgress() {
+    $("prog").hidden = false;
+    if (practice) { $("prog-num").textContent = "練習"; $("prog-fill").style.width = "0%"; return; }
+    var n = S ? S.packet.trials.length : 0;
+    $("prog-num").textContent = (idx + 1) + " / " + n;
+    $("prog-fill").style.width = (100 * idx / n) + "%";
+  }
+
+  function problemHtml(p) {
+    var box = document.createDocumentFragment();
+    var t = document.createElement("p"); t.className = "problem-title"; t.textContent = p.title; box.appendChild(t);
+    p.body.forEach(function (x) { var e = document.createElement("p"); e.textContent = x; box.appendChild(e); });
+    return box;
+  }
+
+  // ---- 送信：失敗しても順に送り直す。完了の前に全件送り終える
+  function flush() {
+    if (flushing || !pending.length) return Promise.resolve();
+    flushing = true;
+    var row = pending[0];
+    return api.record(row).then(function () {
+      pending.shift(); save("hep_pending", pending); flushing = false;
+      return flush();
+    }, function () {
+      flushing = false;
+      return new Promise(function (res) { setTimeout(res, 3000); }).then(flush);
+    });
+  }
+
+  // ---- 1組を表示する
+  function render(a, b, chk) {
+    var A = S.items[a], B = S.items[b];
+    $("ta").textContent = A.t; $("ba").textContent = A.b;
+    $("tb").textContent = B.t; $("bb").textContent = B.b;
+    $("notice").hidden = !chk;
+    if (chk) $("notice").textContent = "確認問題：この組は、4問すべて「案" + chk + "」を選んでください";
+    document.querySelectorAll(".opt").forEach(function (o) { o.setAttribute("aria-pressed", "false"); });
+    $("btn-next").disabled = true;
+    $("trial-msg").textContent = "";
+    $("ref").open = false;
+    var body = $("trial-body"); body.classList.remove("fade"); void body.offsetWidth; body.classList.add("fade");
+    cur = {left: a, right: b, chk: chk || "", q1: null, q2: null, q3: null, q4: null,
+           q1_ms: null, q2_ms: null, q3_ms: null, q4_ms: null, changes: 0,
+           t0: performance.now(), shown_at: new Date().toISOString()};
+    show("s-trial");
+    setProgress();
+  }
+
+  document.querySelectorAll(".opt").forEach(function (o) {
+    o.addEventListener("click", function () {
+      var q = o.getAttribute("data-q"), side = o.getAttribute("data-side");
+      if (cur[q] && cur[q] !== side) cur.changes++;
+      cur[q] = side;
+      cur[q + "_ms"] = Math.round(performance.now() - cur.t0);
+      document.querySelectorAll('.opt[data-q="' + q + '"]').forEach(function (x) {
+        x.setAttribute("aria-pressed", x === o ? "true" : "false");
+      });
+      var ready = cur.q1 && cur.q2 && cur.q3 && cur.q4;
+      $("btn-next").disabled = !ready;
+      var left = ["q1", "q2", "q3", "q4"].filter(function (k) { return !cur[k]; }).length;
+      $("trial-msg").textContent = ready ? "" : "あと" + left + "問です";
+    });
+  });
+
+  $("btn-next").addEventListener("click", function () {
+    if (!(cur.q1 && cur.q2 && cur.q3 && cur.q4)) return;
+    var rt = Math.round(performance.now() - cur.t0);
+    if (practice) { practice = false; $("prog").hidden = true; show("s-after-practice"); return; }
+    var t = S.packet.trials[idx];
+    var pick = function (side) { return side === "A" ? cur.left : cur.right; };
+    pending.push({session_id: S.session, packet_id: S.packet.id, index: idx, pair_id: t.p,
+                  kind: t.chk ? "attention" : "", left: cur.left, right: cur.right,
+                  q1: pick(cur.q1), q2: pick(cur.q2), q3: pick(cur.q3), q4: pick(cur.q4),
+                  q1_side: cur.q1, q2_side: cur.q2, q3_side: cur.q3, q4_side: cur.q4,
+                  rt_ms: rt, q1_ms: cur.q1_ms, q2_ms: cur.q2_ms, q3_ms: cur.q3_ms, q4_ms: cur.q4_ms,
+                  changes: cur.changes,
+                  chk: cur.chk, chk_pass: cur.chk ? [cur.q1, cur.q2, cur.q3, cur.q4].every(function (x) { return x === cur.chk; }) : "",
+                  shown_at: cur.shown_at});
+    save("hep_pending", pending);
+    flush();
+    idx++;
+    save("hep_progress", {session: S.session, idx: idx});
+    next();
+  });
+
+  function next() {
+    if (idx >= S.packet.trials.length) { $("prog-fill").style.width = "100%"; $("prog-num").textContent = "完了"; show("s-survey"); return; }
+    var t = S.packet.trials[idx];
+    render(t.a, t.b, t.chk);
+  }
+
+  // ---- 同意 → 束を受け取る
+  function consentReady() { $("btn-consent").disabled = !$("agree").checked; }
+  $("agree").addEventListener("change", consentReady);
+
+  function begin(resume) {
+    $("btn-consent").disabled = true;
+    $("consent-msg").textContent = "準備しています…";
+    return api.start(cid).then(function (s) {
+      S = s;
+      var n = s.packet.trials.length;
+      $("n-trials").textContent = n; $("n-trials-2").textContent = n;
+      $("problem-intro").textContent = ""; $("problem-intro").appendChild(problemHtml(s.problem));
+      $("problem-ref").textContent = ""; $("problem-ref").appendChild(problemHtml(s.problem));
+      var local = load("hep_progress", null);
+      var doneServer = s.done.length ? Math.max.apply(null, s.done) + 1 : 0;
+      var doneLocal = local && local.session === s.session ? local.idx : 0;
+      idx = Math.max(doneServer, doneLocal);
+      save("hep_consented", s.session);
+      flush();
+      if (idx > 0) next(); else show("s-intro");
+    }, function () {
+      $("consent-msg").textContent = "";
+      consentReady();
+      show("s-error");
+    });
+  }
+  $("btn-consent").addEventListener("click", function () { begin(false); });
+  $("btn-retry").addEventListener("click", function () {
+    if (S && idx >= S.packet.trials.length) { show("s-survey"); return; }
+    if (S) { next(); return; }
+    begin(true);
+  });
+  $("btn-intro").addEventListener("click", function () {
+    practice = true; $("prog").hidden = false;
+    render(S.practice.a, S.practice.b, null);
+  });
+  $("btn-main").addEventListener("click", function () { next(); });
+
+  // ---- 最後の質問 → 完了
+  function surveyReady() {
+    $("btn-finish").disabled = !(document.querySelector('input[name="seen"]:checked') && document.querySelector('input[name="exp"]:checked'));
+  }
+  document.querySelectorAll('#s-survey input[type="radio"]').forEach(function (r) { r.addEventListener("change", surveyReady); });
+  $("btn-finish").addEventListener("click", function () {
+    $("btn-finish").disabled = true;
+    $("survey-msg").textContent = "送信しています…";
+    var survey = {seen_before: document.querySelector('input[name="seen"]:checked').value,
+                  experience: document.querySelector('input[name="exp"]:checked').value,
+                  comment: $("comment").value};
+    flush().then(function () { return api.finish(S.session, survey); }).then(function (r) {
+      $("code").textContent = r.code;
+      $("debrief").textContent = S.debrief;
+      save("hep_progress", null); save("hep_consented", null);
+      $("prog").hidden = true;
+      show("s-done");
+    }, function () {
+      $("survey-msg").textContent = "送信できませんでした。通信状況を確かめて、もう一度押してください。";
+      $("btn-finish").disabled = false;
+    });
+  });
+
+  // ---- 起動
+  var STUDY_INFO = LIVE ? null : window.DEMO_STUDY;
+  $("contact").textContent = (STUDY_INFO && STUDY_INFO.contact) || window.STUDY_CONTACT || "（実施者の連絡先）";
+  $("demo-chip").hidden = LIVE;
+  if (GAS && !API_URL) call("contact").then(function (c) { $("contact").textContent = c; }, function () {});
+  if (LIVE && load("hep_consented", null)) begin(true);   // 同意済みで途中だった人は、そのまま続きへ
+})();
+</script>
+
+</body>
+</html>

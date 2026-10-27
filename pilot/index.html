@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap">
 <style>
-/* Layout: 読む面（2枚の案を左右に、狭い画面では上下に）と、答える面（2問＋次へ）を縦に分ける。
+/* Layout: 読む面（2枚の案を左右に、狭い画面では上下に）と、答える面（4問＋次へ）を縦に分ける。
    2枚の案は色・大きさ・装飾をすべて同じにし、見た目で一方を有利にしない。 */
 :root {
   --bg: #eef1f4;
@@ -138,10 +138,10 @@ details.ref .problem { margin: 0 16px 16px; border: 0; padding: 0; }
 .card .tag { font-family: var(--font-display); font-weight: 700; font-size: var(--step--1); letter-spacing: 0.12em; color: var(--muted); }
 .card h3 { font-family: var(--font-body); font-size: var(--step-1); font-weight: 700; line-height: 1.6; }
 .card p { line-height: 1.95; overflow-wrap: anywhere; }
-.qs { display: flex; flex-direction: column; gap: 14px; margin-top: 22px; }
+.qs { display: flex; flex-direction: column; gap: 10px; margin-top: 22px; }
 .q {
   border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface);
-  margin: 0; padding: 16px 18px; display: grid; grid-template-columns: 1fr auto; gap: 12px 20px; align-items: center;
+  margin: 0; padding: 12px 18px; display: grid; grid-template-columns: 1fr auto; gap: 10px 20px; align-items: center;
 }
 .q legend { display: contents; }
 .q .qtext { min-width: 0; }
@@ -198,7 +198,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
     <p class="lead">2つのビジネスアイデアを読み比べて、よいと思うほうを選んでください。</p>
     <dl class="facts">
       <dt>内容</dt><dd>アイデア2つの組を <b><span id="n-trials">19</span>組</b>（はじめに練習1組）</dd>
-      <dt>時間</dt><dd>約10分</dd>
+      <dt>時間</dt><dd>約12分</dd>
       <dt>回答</dt><dd>匿名です。研究発表で統計としてのみ使います。途中でやめてもかまいません。</dd>
       <dt>問い合わせ</dt><dd id="contact"></dd>
     </dl>
@@ -217,10 +217,12 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
       <div class="problem" id="problem-intro"></div>
     </div>
     <div class="stack-s">
-      <p class="label">2つの質問に、案Aか案Bで答えます</p>
+      <p class="label">4つの質問に、案Aか案Bで答えます</p>
       <div class="qdef">
-        <span class="qn">新しさ</span><span>より新しい発想なのはどちらか</span>
-        <span class="qn">総合</span><span>新しさ・実現できそうか・価値を合わせて、より優れているのはどちらか</span>
+        <span class="qn">新しさ</span><span>どちらが、より見たことのない発想か</span>
+        <span class="qn">実現性</span><span>どちらが、実際に成り立ちそうか</span>
+        <span class="qn">魅力</span><span>どちらの話を、もっと詳しく聞いてみたいか</span>
+        <span class="qn">総合</span><span>どちらが、より良いアイデアだと思うか</span>
       </div>
     </div>
     <ul class="tips">
@@ -255,14 +257,28 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
       </div>
       <div class="qs">
         <fieldset class="q">
-          <legend><span class="qtext"><span class="qlabel">新しさ</span>より新しい発想なのは？</span></legend>
+          <legend><span class="qtext"><span class="qlabel">新しさ</span>より見たことのない発想なのは？</span></legend>
           <div class="seg" role="group" aria-label="新しさ">
             <button type="button" class="opt" data-q="q1" data-side="A" aria-pressed="false">案A</button>
             <button type="button" class="opt" data-q="q1" data-side="B" aria-pressed="false">案B</button>
           </div>
         </fieldset>
         <fieldset class="q">
-          <legend><span class="qtext"><span class="qlabel">総合</span>新しさ・実現性・価値を合わせて、より優れているのは？</span></legend>
+          <legend><span class="qtext"><span class="qlabel">実現性</span>実際に成り立ちそうなのは？</span></legend>
+          <div class="seg" role="group" aria-label="実現性">
+            <button type="button" class="opt" data-q="q3" data-side="A" aria-pressed="false">案A</button>
+            <button type="button" class="opt" data-q="q3" data-side="B" aria-pressed="false">案B</button>
+          </div>
+        </fieldset>
+        <fieldset class="q">
+          <legend><span class="qtext"><span class="qlabel">魅力</span>もっと詳しく聞いてみたいのは？</span></legend>
+          <div class="seg" role="group" aria-label="魅力">
+            <button type="button" class="opt" data-q="q4" data-side="A" aria-pressed="false">案A</button>
+            <button type="button" class="opt" data-q="q4" data-side="B" aria-pressed="false">案B</button>
+          </div>
+        </fieldset>
+        <fieldset class="q">
+          <legend><span class="qtext"><span class="qlabel">総合</span>より良いアイデアだと思うのは？</span></legend>
           <div class="seg" role="group" aria-label="総合">
             <button type="button" class="opt" data-q="q2" data-side="A" aria-pressed="false">案A</button>
             <button type="button" class="opt" data-q="q2" data-side="B" aria-pressed="false">案B</button>
@@ -422,13 +438,14 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
     $("ta").textContent = A.t; $("ba").textContent = A.b;
     $("tb").textContent = B.t; $("bb").textContent = B.b;
     $("notice").hidden = !chk;
-    if (chk) $("notice").textContent = "確認問題：この組は、2問とも「案" + chk + "」を選んでください";
+    if (chk) $("notice").textContent = "確認問題：この組は、4問すべて「案" + chk + "」を選んでください";
     document.querySelectorAll(".opt").forEach(function (o) { o.setAttribute("aria-pressed", "false"); });
     $("btn-next").disabled = true;
     $("trial-msg").textContent = "";
     $("ref").open = false;
     var body = $("trial-body"); body.classList.remove("fade"); void body.offsetWidth; body.classList.add("fade");
-    cur = {left: a, right: b, chk: chk || "", q1: null, q2: null, q1_ms: null, q2_ms: null, changes: 0,
+    cur = {left: a, right: b, chk: chk || "", q1: null, q2: null, q3: null, q4: null,
+           q1_ms: null, q2_ms: null, q3_ms: null, q4_ms: null, changes: 0,
            t0: performance.now(), shown_at: new Date().toISOString()};
     show("s-trial");
     setProgress();
@@ -443,23 +460,26 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
       document.querySelectorAll('.opt[data-q="' + q + '"]').forEach(function (x) {
         x.setAttribute("aria-pressed", x === o ? "true" : "false");
       });
-      var ready = cur.q1 && cur.q2;
+      var ready = cur.q1 && cur.q2 && cur.q3 && cur.q4;
       $("btn-next").disabled = !ready;
-      $("trial-msg").textContent = ready ? "" : "もう1問に答えてください";
+      var left = ["q1", "q2", "q3", "q4"].filter(function (k) { return !cur[k]; }).length;
+      $("trial-msg").textContent = ready ? "" : "あと" + left + "問です";
     });
   });
 
   $("btn-next").addEventListener("click", function () {
-    if (!(cur.q1 && cur.q2)) return;
+    if (!(cur.q1 && cur.q2 && cur.q3 && cur.q4)) return;
     var rt = Math.round(performance.now() - cur.t0);
     if (practice) { practice = false; $("prog").hidden = true; show("s-after-practice"); return; }
     var t = S.packet.trials[idx];
     var pick = function (side) { return side === "A" ? cur.left : cur.right; };
     pending.push({session_id: S.session, packet_id: S.packet.id, index: idx, pair_id: t.p,
                   kind: t.chk ? "attention" : "", left: cur.left, right: cur.right,
-                  q1: pick(cur.q1), q2: pick(cur.q2), q1_side: cur.q1, q2_side: cur.q2,
-                  rt_ms: rt, q1_ms: cur.q1_ms, q2_ms: cur.q2_ms, changes: cur.changes,
-                  chk: cur.chk, chk_pass: cur.chk ? (cur.q1 === cur.chk && cur.q2 === cur.chk) : "",
+                  q1: pick(cur.q1), q2: pick(cur.q2), q3: pick(cur.q3), q4: pick(cur.q4),
+                  q1_side: cur.q1, q2_side: cur.q2, q3_side: cur.q3, q4_side: cur.q4,
+                  rt_ms: rt, q1_ms: cur.q1_ms, q2_ms: cur.q2_ms, q3_ms: cur.q3_ms, q4_ms: cur.q4_ms,
+                  changes: cur.changes,
+                  chk: cur.chk, chk_pass: cur.chk ? [cur.q1, cur.q2, cur.q3, cur.q4].every(function (x) { return x === cur.chk; }) : "",
                   shown_at: cur.shown_at});
     save("hep_pending", pending);
     flush();
