@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<script>window.API_URL = "https://script.google.com/macros/s/AKfycbw8VCnsEuN2gxl74HXk-JJx9I5B3re_oPSBkU8ISQ73ZQaGPHWYpjkO7NEelLl5GZQ8/exec"; window.STUDY_CONTACT = "〔要記入：研究室名・実施責任者名・メールアドレス〕";</script>
+<script>window.API_URL = "https://script.google.com/macros/s/AKfycbw8VCnsEuN2gxl74HXk-JJx9I5B3re_oPSBkU8ISQ73ZQaGPHWYpjkO7NEelLl5GZQ8/exec"; window.STUDY_CONTACT = "大西研究室　海津幸作（kaizu.kosaku465@mail.kyutech.jp）";</script>
 </head>
 <body>
 <title>アイデア比較調査</title>
@@ -165,6 +165,12 @@ details.ref .problem { margin: 0 16px 16px; border: 0; padding: 0; }
 .radios { display: flex; flex-wrap: wrap; gap: 8px 20px; }
 .radios label { display: flex; gap: 8px; align-items: center; cursor: pointer; }
 .radios input { accent-color: var(--accent); width: 18px; height: 18px; }
+.who { border-top: 1px solid var(--line); padding-top: 18px; }
+.fields { display: grid; grid-template-columns: 1fr 140px; gap: 12px; }
+.fields label { display: flex; flex-direction: column; gap: 4px; font-size: var(--step--1); color: var(--muted); min-width: 0; }
+.fields input { font: inherit; font-size: var(--step-0); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; min-height: 46px; width: 100%; }
+.fields input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 480px) { .fields { grid-template-columns: 1fr; } }
 textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(--line); border-radius: 8px; padding: 10px; background: var(--bg); color: var(--ink); }
 
 @media (max-width: 760px) {
@@ -199,7 +205,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
     <dl class="facts">
       <dt>内容</dt><dd>アイデア2つの組を <b><span id="n-trials">19</span>組</b>（はじめに練習1組）</dd>
       <dt>時間</dt><dd>約12分</dd>
-      <dt>回答</dt><dd>匿名です。研究発表で統計としてのみ使います。途中でやめてもかまいません。</dd>
+      <dt>回答</dt><dd>研究発表で統計としてのみ使います。途中でやめてもかまいません。最後に、完了の確認のためお名前（ニックネーム可）と年齢をうかがいますが、回答とは別に保存し、結びつけません。</dd>
       <dt>問い合わせ</dt><dd id="contact"></dd>
     </dl>
     <label class="check"><input type="checkbox" id="agree"><span>18歳以上で、調査への協力に同意します</span></label>
@@ -301,7 +307,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
 
   <!-- 5. 最後の質問 -->
   <section id="s-survey" class="narrow stack" hidden>
-    <h1>最後に2つだけ</h1>
+    <h1>最後に少しだけ</h1>
     <div class="stack-s">
       <p><b>読んだ案の中に、前に見たことのある案はありましたか</b></p>
       <div class="radios" id="seen">
@@ -320,6 +326,14 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
     <div class="stack-s">
       <label for="comment"><b>感想</b><span class="muted">（任意）</span></label>
       <textarea id="comment" maxlength="1000"></textarea>
+    </div>
+    <div class="who stack-s">
+      <p><b>完了の確認のため、お名前と年齢を入力してください</b></p>
+      <p class="muted small">依頼した方が終えたかを確かめるためだけに使います。回答とは別の場所に、日付だけを付けて保存し、どの回答の方かは分からないようにしています。</p>
+      <div class="fields">
+        <label for="p-name"><span>お名前（ニックネーム可）</span><input type="text" id="p-name" maxlength="40" autocomplete="off"></label>
+        <label for="p-age"><span>年齢</span><input type="number" id="p-age" min="18" max="120" inputmode="numeric"></label>
+      </div>
     </div>
     <div class="btn-row">
       <span class="muted small" id="survey-msg" role="status"></span>
@@ -369,11 +383,11 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
   var api = API_URL ? {
     start: function (cid) { return post({action: "start", client_id: cid, ua: navigator.userAgent, screen: screen.width + "x" + screen.height}); },
     record: function (row) { return post({action: "record", row: row}); },
-    finish: function (sid, survey) { return post({action: "finish", session_id: sid, survey: survey}); }
+    finish: function (sid, survey, who) { return post({action: "finish", session_id: sid, survey: survey, participant: who}); }
   } : GAS ? {
     start: function (cid) { return call("startSession", cid, navigator.userAgent, screen.width + "x" + screen.height); },
     record: function (row) { return call("recordTrial", row); },
-    finish: function (sid, survey) { return call("finishSession", sid, survey); }
+    finish: function (sid, survey, who) { return call("finishSession", sid, survey, who); }
   } : {
     start: function () {
       var s = window.DEMO_STUDY;
@@ -534,16 +548,21 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
 
   // ---- 最後の質問 → 完了
   function surveyReady() {
-    $("btn-finish").disabled = !(document.querySelector('input[name="seen"]:checked') && document.querySelector('input[name="exp"]:checked'));
+    var age = parseInt($("p-age").value, 10);
+    $("btn-finish").disabled = !(document.querySelector('input[name="seen"]:checked') && document.querySelector('input[name="exp"]:checked')
+                                 && $("p-name").value.trim() && age >= 18 && age <= 120);
   }
   document.querySelectorAll('#s-survey input[type="radio"]').forEach(function (r) { r.addEventListener("change", surveyReady); });
+  $("p-name").addEventListener("input", surveyReady);
+  $("p-age").addEventListener("input", surveyReady);
   $("btn-finish").addEventListener("click", function () {
     $("btn-finish").disabled = true;
     $("survey-msg").textContent = "送信しています…";
     var survey = {seen_before: document.querySelector('input[name="seen"]:checked').value,
                   experience: document.querySelector('input[name="exp"]:checked').value,
                   comment: $("comment").value};
-    flush().then(function () { return api.finish(S.session, survey); }).then(function (r) {
+    var who = {name: $("p-name").value.trim(), age: parseInt($("p-age").value, 10)};
+    flush().then(function () { return api.finish(S.session, survey, who); }).then(function (r) {
       $("code").textContent = r.code;
       $("debrief").textContent = S.debrief;
       save("hep_progress", null); save("hep_consented", null);
