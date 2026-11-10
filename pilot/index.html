@@ -398,8 +398,8 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
   <!-- 6. 完了 -->
   <section id="s-done" class="narrow stack" hidden>
     <h1 data-i18n="done_h">ありがとうございました</h1>
-    <p data-i18n="done_p">回答を記録しました。完了の確認が必要な場合は、このコードをお伝えください。</p>
-    <div class="code" id="code"></div>
+    <p data-i18n="done_p">回答を記録しました。ご協力ありがとうございました。</p>
+    <div class="code" id="code" hidden></div>
     <p id="debrief" class="muted small"></p>
   </section>
 
@@ -440,7 +440,7 @@ window.I18N = {
     who_q: "完了の確認のため、お名前と年齢を入力してください",
     who_note: "依頼した方が終えたかを確かめるためだけに使います。回答とは別の場所に、日付だけを付けて保存し、どの回答の方かは分からないようにしています。",
     name: "お名前（ニックネーム可）", age: "年齢", btn_send: "送信",
-    done_h: "ありがとうございました", done_p: "回答を記録しました。完了の確認が必要な場合は、このコードをお伝えください。",
+    done_h: "ありがとうございました", done_p: "回答を記録しました。ご協力ありがとうございました。",
     err_h: "接続できませんでした", err_p: "通信状況を確かめて、もう一度お試しください。ここまでの回答は端末に残っています。", btn_retry: "もう一度試す",
     notice: "確認問題：この組は、4問すべて「{opt}」を選んでください", left: "あと{n}問です", practice: "練習", complete: "完了",
     preparing: "準備しています…", sending: "送信しています…", send_fail: "送信できませんでした。通信状況を確かめて、もう一度押してください。"
@@ -473,7 +473,7 @@ window.I18N = {
     who_q: "To confirm completion, please enter your name and age",
     who_note: "Used only to check that the people we asked have finished. Stored separately with the date only, so it cannot be linked to your answers.",
     name: "Name (nickname OK)", age: "Age", btn_send: "Submit",
-    done_h: "Thank you", done_p: "Your answers have been recorded. If you need to confirm completion, please send us this code.",
+    done_h: "Thank you", done_p: "Your answers have been recorded. Thank you for your help.",
     err_h: "Could not connect", err_p: "Please check your connection and try again. Your answers so far are kept on this device.", btn_retry: "Try again",
     notice: "Check question: for this pair, choose “{opt}” for all 4 questions", left: "{n} more to answer", practice: "Practice", complete: "Done",
     preparing: "Preparing…", sending: "Sending…", send_fail: "Could not send. Please check your connection and press the button again."
@@ -504,7 +504,7 @@ window.I18N = {
     who_q: "为确认完成，请输入姓名和年龄",
     who_note: "仅用于确认受邀者是否已完成。与回答分开保存，只附带日期，无法知道对应哪份回答。",
     name: "姓名（可用昵称）", age: "年龄", btn_send: "提交",
-    done_h: "谢谢参与", done_p: "已记录你的回答。如需确认完成，请告知此代码。",
+    done_h: "谢谢参与", done_p: "已记录你的回答。感谢你的协助。",
     err_h: "无法连接", err_p: "请检查网络后重试。目前的回答已保存在此设备上。", btn_retry: "重试",
     notice: "确认题：本组的4个问题都请选择“{opt}”", left: "还剩{n}题", practice: "练习", complete: "完成",
     preparing: "准备中…", sending: "提交中…", send_fail: "提交失败。请检查网络后再按一次。"
@@ -537,7 +537,7 @@ window.I18N = {
     who_q: "Untuk konfirmasi, masukkan nama dan usia Anda",
     who_note: "Hanya dipakai untuk memastikan orang yang kami minta sudah selesai. Disimpan terpisah hanya dengan tanggal, sehingga tidak dapat dihubungkan dengan jawaban Anda.",
     name: "Nama (boleh nama panggilan)", age: "Usia", btn_send: "Kirim",
-    done_h: "Terima kasih", done_p: "Jawaban Anda telah tercatat. Jika perlu konfirmasi, kirimkan kode ini kepada kami.",
+    done_h: "Terima kasih", done_p: "Jawaban Anda telah tercatat. Terima kasih atas bantuan Anda.",
     err_h: "Tidak dapat terhubung", err_p: "Periksa koneksi Anda lalu coba lagi. Jawaban sejauh ini tersimpan di perangkat ini.", btn_retry: "Coba lagi",
     notice: "Pertanyaan pengecekan: untuk pasangan ini, pilih “{opt}” pada keempat pertanyaan", left: "{n} lagi", practice: "Latihan", complete: "Selesai",
     preparing: "Menyiapkan…", sending: "Mengirim…", send_fail: "Gagal mengirim. Periksa koneksi lalu tekan tombol lagi."
