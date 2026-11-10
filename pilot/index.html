@@ -95,6 +95,17 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   background: var(--warn-bg); color: var(--warn-ink); white-space: nowrap;
 }
 
+/* 言語ごとの調整：中国語は簡体字の字形のフォントにし、英語・インドネシア語は本文が長くなるので行を詰める */
+:root:lang(zh-Hans) { --font-display: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif; --font-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif; }
+:root:lang(en) .card p, :root:lang(id) .card p { font-size: 0.875rem; line-height: 1.6; }
+:root:lang(en) .card h3, :root:lang(id) .card h3 { font-size: 1rem; }
+
+/* 言語の切り替え（同意の画面だけ） */
+.langs { display: flex; flex-wrap: wrap; gap: 6px; }
+.lang { font: inherit; font-size: var(--step--1); border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+.lang[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.lang:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
 /* はじめに・進め方 */
 .lead { font-size: var(--step-1); }
 .facts { display: grid; grid-template-columns: auto 1fr; gap: 10px 20px; margin: 0; padding: 18px 0; border-block: 1px solid var(--line); }
@@ -189,13 +200,13 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
 
 <div class="bar" id="bar">
   <div class="bar-in">
-    <span class="bar-name">アイデア比較調査</span>
+    <span class="bar-name" data-i18n="bar_name">アイデア比較調査</span>
     <div class="prog" id="prog" hidden>
       <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
       <span class="prog-num" id="prog-num"></span>
     </div>
-    <button type="button" class="bar-btn" id="btn-problem" aria-controls="ref" aria-expanded="false" hidden>お題を見る</button>
-    <span class="demo-chip" id="demo-chip" hidden>プレビュー：回答は保存されません</span>
+    <button type="button" class="bar-btn" id="btn-problem" aria-controls="ref" aria-expanded="false" hidden data-i18n="btn_problem">お題を見る</button>
+    <span class="demo-chip" id="demo-chip" hidden data-i18n="demo_chip">プレビュー：回答は保存されません</span>
   </div>
 </div>
 
@@ -203,43 +214,50 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
 
   <!-- 1. はじめに -->
   <section id="s-consent" class="narrow stack">
-    <h1>アイデア比較調査</h1>
-    <p class="lead">2つのビジネスアイデアを読み比べて、よいと思うほうを選んでください。</p>
+    <div class="langs" id="langs" role="group" aria-label="Language">
+      <button type="button" class="lang" data-lang="ja" aria-pressed="true">日本語</button>
+      <button type="button" class="lang" data-lang="en" aria-pressed="false">English</button>
+      <button type="button" class="lang" data-lang="zh" aria-pressed="false">中文</button>
+      <button type="button" class="lang" data-lang="id" aria-pressed="false">Bahasa Indonesia</button>
+    </div>
+    <h1 data-i18n="title">アイデア比較調査</h1>
+    <p class="lead" data-i18n="lead">2つのビジネスアイデアを読み比べて、よいと思うほうを選んでください。</p>
     <dl class="facts">
-      <dt>内容</dt><dd>アイデア2つの組を <b><span id="n-trials">19</span>組</b>（はじめに練習1組）</dd>
-      <dt>時間</dt><dd>約12分</dd>
-      <dt>回答</dt><dd>研究発表で統計としてのみ使います。途中でやめてもかまいません。最後に、完了の確認のためお名前（ニックネーム可）と年齢をうかがいますが、回答とは別に保存し、結びつけません。</dd>
-      <dt>問い合わせ</dt><dd id="contact"></dd>
+      <dt data-i18n="f_content_dt">内容</dt><dd data-i18n="f_content_dd" data-html="1">アイデア2つの組を <b>19組</b>（はじめに練習1組）</dd>
+      <dt data-i18n="f_time_dt">時間</dt><dd data-i18n="f_time_dd">約12分</dd>
+      <dt data-i18n="f_answer_dt">回答</dt><dd data-i18n="f_answer_dd">研究発表で統計としてのみ使います。途中でやめてもかまいません。最後に、完了の確認のためお名前（ニックネーム可）と年齢をうかがいますが、回答とは別に保存し、結びつけません。</dd>
+      <dt data-i18n="f_contact_dt">問い合わせ</dt><dd id="contact"></dd>
     </dl>
-    <label class="check"><input type="checkbox" id="agree"><span>18歳以上で、調査への協力に同意します</span></label>
+    <label class="check"><input type="checkbox" id="agree"><span data-i18n="agree">18歳以上で、調査への協力に同意します</span></label>
     <div class="btn-row">
       <span class="muted small" id="consent-msg" role="status"></span>
-      <button class="btn" id="btn-consent" disabled>始める</button>
+      <button class="btn" id="btn-consent" disabled data-i18n="btn_start">始める</button>
     </div>
   </section>
 
   <!-- 2. 進め方 -->
   <section id="s-intro" class="narrow stack" hidden>
-    <h1>進め方</h1>
+    <h1 data-i18n="intro_h">進め方</h1>
     <div class="stack-s">
-      <p class="label">お題</p>
+      <p class="label" data-i18n="label_problem">お題</p>
       <div class="problem" id="problem-intro"></div>
     </div>
     <div class="stack-s">
-      <p class="label">4つの質問に、5段階（かなりA・ややA・同じ・ややB・かなりB）で答えます</p>
+      <p class="label" data-i18n="label_q">4つの質問に、5段階（かなりA・ややA・同じ・ややB・かなりB）で答えます</p>
       <div class="qdef">
-        <span class="qn">新しさ</span><span>どちらが、より見たことのない発想か</span>
-        <span class="qn">実現性</span><span>どちらが、実際に成り立ちそうか</span>
-        <span class="qn">魅力</span><span>どちらの話を、もっと詳しく聞いてみたいか</span>
-        <span class="qn">総合</span><span>どちらが、より良いアイデアだと思うか</span>
+        <span class="qn" data-i18n="ql_q1">新しさ</span><span data-i18n="def_q1">どちらが、より見たことのない発想か</span>
+        <span class="qn" data-i18n="ql_q3">実現性</span><span data-i18n="def_q3">どちらが、実際に成り立ちそうか</span>
+        <span class="qn" data-i18n="ql_q4">魅力</span><span data-i18n="def_q4">どちらの話を、もっと詳しく聞いてみたいか</span>
+        <span class="qn" data-i18n="ql_q2">総合</span><span data-i18n="def_q2">どちらが、より良いアイデアだと思うか</span>
       </div>
     </div>
     <ul class="tips">
-      <li>正解はありません。差がないと感じたら「同じ」を選んでください。</li>
-      <li>文章のうまさではなく、アイデアの中身で選んでください。</li>
-      <li>途中に、選ぶ案を指定する確認問題が2つあります。</li>
+      <li data-i18n="tip1">正解はありません。差がないと感じたら「同じ」を選んでください。</li>
+      <li data-i18n="tip2">文章のうまさではなく、アイデアの中身で選んでください。</li>
+      <li data-i18n="tip3">途中に、選ぶ案を指定する確認問題が2つあります。</li>
+      <li data-i18n="tip4" id="tip4" hidden></li>
     </ul>
-    <div class="btn-row"><button class="btn" id="btn-intro">練習する</button></div>
+    <div class="btn-row"><button class="btn" id="btn-intro" data-i18n="btn_practice">練習する</button></div>
   </section>
 
   <!-- 3. 判定（練習と本番で共通） -->
@@ -253,12 +271,12 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
     <div id="trial-body">
       <div class="pair">
         <article class="card" aria-labelledby="ta">
-          <span class="tag">案A</span>
+          <span class="tag" data-i18n="tag_a">案A</span>
           <h3 id="ta"></h3>
           <p id="ba"></p>
         </article>
         <article class="card" aria-labelledby="tb">
-          <span class="tag">案B</span>
+          <span class="tag" data-i18n="tag_b">案B</span>
           <h3 id="tb"></h3>
           <p id="bb"></p>
         </article>
@@ -266,7 +284,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
       <div class="qs">
         <div class="qgrid">
           <div class="q" role="group" aria-label="新しさ">
-            <span class="qt"><b class="ql">新しさ</b><span>より見たことのない発想なのは？</span></span>
+            <span class="qt"><b class="ql" data-i18n="ql_q1">新しさ</b><span data-i18n="qt_q1">より見たことのない発想なのは？</span></span>
             <span class="seg">
               <button type="button" class="opt" data-q="q1" data-side="A2" aria-pressed="false" aria-label="案Aがかなり良い">かなりA</button>
               <button type="button" class="opt" data-q="q1" data-side="A1" aria-pressed="false" aria-label="案Aがやや良い">ややA</button>
@@ -276,7 +294,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
             </span>
           </div>
           <div class="q" role="group" aria-label="実現性">
-            <span class="qt"><b class="ql">実現性</b><span>実際に成り立ちそうなのは？</span></span>
+            <span class="qt"><b class="ql" data-i18n="ql_q3">実現性</b><span data-i18n="qt_q3">実際に成り立ちそうなのは？</span></span>
             <span class="seg">
               <button type="button" class="opt" data-q="q3" data-side="A2" aria-pressed="false" aria-label="案Aがかなり良い">かなりA</button>
               <button type="button" class="opt" data-q="q3" data-side="A1" aria-pressed="false" aria-label="案Aがやや良い">ややA</button>
@@ -286,7 +304,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
             </span>
           </div>
           <div class="q" role="group" aria-label="魅力">
-            <span class="qt"><b class="ql">魅力</b><span>もっと詳しく聞いてみたいのは？</span></span>
+            <span class="qt"><b class="ql" data-i18n="ql_q4">魅力</b><span data-i18n="qt_q4">もっと詳しく聞いてみたいのは？</span></span>
             <span class="seg">
               <button type="button" class="opt" data-q="q4" data-side="A2" aria-pressed="false" aria-label="案Aがかなり良い">かなりA</button>
               <button type="button" class="opt" data-q="q4" data-side="A1" aria-pressed="false" aria-label="案Aがやや良い">ややA</button>
@@ -296,7 +314,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
             </span>
           </div>
           <div class="q" role="group" aria-label="総合">
-            <span class="qt"><b class="ql">総合</b><span>より良いアイデアだと思うのは？</span></span>
+            <span class="qt"><b class="ql" data-i18n="ql_q2">総合</b><span data-i18n="qt_q2">より良いアイデアだと思うのは？</span></span>
             <span class="seg">
               <button type="button" class="opt" data-q="q2" data-side="A2" aria-pressed="false" aria-label="案Aがかなり良い">かなりA</button>
               <button type="button" class="opt" data-q="q2" data-side="A1" aria-pressed="false" aria-label="案Aがやや良い">ややA</button>
@@ -308,7 +326,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
         </div>
         <div class="btn-row">
           <span class="muted small" id="trial-msg" role="status"></span>
-          <button class="btn" id="btn-next" disabled>次へ</button>
+          <button class="btn" id="btn-next" disabled data-i18n="btn_next">次へ</button>
         </div>
       </div>
     </div>
@@ -316,78 +334,211 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
 
   <!-- 4. 練習のあと -->
   <section id="s-after-practice" class="narrow stack" hidden>
-    <h1>練習はここまでです</h1>
-    <p>本番は<span id="n-trials-2">19</span>組です。途中で閉じても、同じ端末で開き直せば続きから再開できます。</p>
-    <div class="btn-row"><button class="btn" id="btn-main">本番へ</button></div>
+    <h1 data-i18n="after_h">練習はここまでです</h1>
+    <p data-i18n="after_p" data-html="1">本番は19組です。途中で閉じても、同じ端末で開き直せば続きから再開できます。</p>
+    <div class="btn-row"><button class="btn" id="btn-main" data-i18n="btn_main">本番へ</button></div>
   </section>
 
   <!-- 5. 最後の質問 -->
   <section id="s-survey" class="narrow stack" hidden>
-    <h1>最後に少しだけ</h1>
+    <h1 data-i18n="survey_h">最後に少しだけ</h1>
     <div class="stack-s">
-      <p><b>読んだ案の中に、前に見たことのある案はありましたか</b></p>
+      <p><b data-i18n="seen_q">読んだ案の中に、前に見たことのある案はありましたか</b></p>
       <div class="radios" id="seen">
-        <label><input type="radio" name="seen" value="no" id="seen-no">なかった</label>
-        <label><input type="radio" name="seen" value="yes" id="seen-yes">あった</label>
-        <label><input type="radio" name="seen" value="unsure" id="seen-unsure">わからない</label>
+        <label><input type="radio" name="seen" value="no" id="seen-no"><span data-i18n="seen_no">なかった</span></label>
+        <label><input type="radio" name="seen" value="yes" id="seen-yes"><span data-i18n="seen_yes">あった</span></label>
+        <label><input type="radio" name="seen" value="unsure" id="seen-unsure"><span data-i18n="unsure">わからない</span></label>
       </div>
     </div>
     <div class="stack-s" id="prior-q" hidden>
-      <p><b>この調査の第1回（同じ形式のアイデア比較）にも参加しましたか</b></p>
+      <p><b data-i18n="prior_q">この調査の第1回（同じ形式のアイデア比較）にも参加しましたか</b></p>
       <div class="radios">
-        <label><input type="radio" name="prior" value="yes" id="prior-yes">参加した</label>
-        <label><input type="radio" name="prior" value="no" id="prior-no">参加していない</label>
-        <label><input type="radio" name="prior" value="unsure" id="prior-unsure">わからない</label>
+        <label><input type="radio" name="prior" value="yes" id="prior-yes"><span data-i18n="prior_yes">参加した</span></label>
+        <label><input type="radio" name="prior" value="no" id="prior-no"><span data-i18n="prior_no">参加していない</span></label>
+        <label><input type="radio" name="prior" value="unsure" id="prior-unsure"><span data-i18n="unsure">わからない</span></label>
       </div>
     </div>
     <div class="stack-s">
-      <p><b>大西研究室のメンバーですか</b></p>
+      <p><b data-i18n="lab_q">大西研究室のメンバーですか</b></p>
       <div class="radios" id="lab">
-        <label><input type="radio" name="lab" value="yes" id="lab-yes">はい</label>
-        <label><input type="radio" name="lab" value="no" id="lab-no">いいえ</label>
+        <label><input type="radio" name="lab" value="yes" id="lab-yes"><span data-i18n="yes">はい</span></label>
+        <label><input type="radio" name="lab" value="no" id="lab-no"><span data-i18n="no">いいえ</span></label>
       </div>
     </div>
     <div class="stack-s">
-      <p><b>ビジネスコンテストやアイデア審査に関わったことはありますか</b></p>
+      <p><b data-i18n="exp_q">ビジネスコンテストやアイデア審査に関わったことはありますか</b></p>
       <div class="radios" id="exp">
-        <label><input type="radio" name="exp" value="yes" id="exp-yes">ある</label>
-        <label><input type="radio" name="exp" value="no" id="exp-no">ない</label>
+        <label><input type="radio" name="exp" value="yes" id="exp-yes"><span data-i18n="exp_yes">ある</span></label>
+        <label><input type="radio" name="exp" value="no" id="exp-no"><span data-i18n="exp_no">ない</span></label>
       </div>
     </div>
     <div class="stack-s">
-      <label for="comment"><b>感想</b><span class="muted">（任意）</span></label>
+      <label for="comment" data-i18n="comment" data-html="1"><b>感想</b><span class="muted">（任意）</span></label>
       <textarea id="comment" maxlength="1000"></textarea>
     </div>
     <div class="who stack-s">
-      <p><b>完了の確認のため、お名前と年齢を入力してください</b></p>
-      <p class="muted small">依頼した方が終えたかを確かめるためだけに使います。回答とは別の場所に、日付だけを付けて保存し、どの回答の方かは分からないようにしています。</p>
+      <p><b data-i18n="who_q">完了の確認のため、お名前と年齢を入力してください</b></p>
+      <p class="muted small" data-i18n="who_note">依頼した方が終えたかを確かめるためだけに使います。回答とは別の場所に、日付だけを付けて保存し、どの回答の方かは分からないようにしています。</p>
       <div class="fields">
-        <label for="p-name"><span>お名前（ニックネーム可）</span><input type="text" id="p-name" maxlength="40" autocomplete="off"></label>
-        <label for="p-age"><span>年齢</span><input type="number" id="p-age" min="18" max="120" inputmode="numeric"></label>
+        <label for="p-name"><span data-i18n="name">お名前（ニックネーム可）</span><input type="text" id="p-name" maxlength="40" autocomplete="off"></label>
+        <label for="p-age"><span data-i18n="age">年齢</span><input type="number" id="p-age" min="18" max="120" inputmode="numeric"></label>
       </div>
     </div>
     <div class="btn-row">
       <span class="muted small" id="survey-msg" role="status"></span>
-      <button class="btn" id="btn-finish" disabled>送信</button>
+      <button class="btn" id="btn-finish" disabled data-i18n="btn_send">送信</button>
     </div>
   </section>
 
   <!-- 6. 完了 -->
   <section id="s-done" class="narrow stack" hidden>
-    <h1>ありがとうございました</h1>
-    <p>回答を記録しました。完了の確認が必要な場合は、このコードをお伝えください。</p>
+    <h1 data-i18n="done_h">ありがとうございました</h1>
+    <p data-i18n="done_p">回答を記録しました。完了の確認が必要な場合は、このコードをお伝えください。</p>
     <div class="code" id="code"></div>
     <p id="debrief" class="muted small"></p>
   </section>
 
   <!-- 接続できないとき -->
   <section id="s-error" class="narrow stack" hidden>
-    <h1>接続できませんでした</h1>
-    <p id="error-msg">通信状況を確かめて、もう一度お試しください。ここまでの回答は端末に残っています。</p>
-    <div class="btn-row"><button class="btn" id="btn-retry">もう一度試す</button></div>
+    <h1 data-i18n="err_h">接続できませんでした</h1>
+    <p id="error-msg" data-i18n="err_p">通信状況を確かめて、もう一度お試しください。ここまでの回答は端末に残っています。</p>
+    <div class="btn-row"><button class="btn" id="btn-retry" data-i18n="btn_retry">もう一度試す</button></div>
   </section>
 </main>
 
+<script>
+// 画面の文言（日本語・英語・中国語・インドネシア語）。案の本文の訳は Packets.gs の items[*].tr にある
+window.I18N = {
+  ja: {
+    bar_name: "アイデア比較調査", btn_problem: "お題を見る", demo_chip: "プレビュー：回答は保存されません",
+    title: "アイデア比較調査", lead: "2つのビジネスアイデアを読み比べて、よいと思うほうを選んでください。",
+    f_content_dt: "内容", f_content_dd: "アイデア2つの組を <b>{n}組</b>（はじめに練習1組）",
+    f_time_dt: "時間", f_time_dd: "約12分",
+    f_answer_dt: "回答", f_answer_dd: "研究発表で統計としてのみ使います。途中でやめてもかまいません。最後に、完了の確認のためお名前（ニックネーム可）と年齢をうかがいますが、回答とは別に保存し、結びつけません。",
+    f_contact_dt: "問い合わせ", agree: "18歳以上で、調査への協力に同意します", btn_start: "始める",
+    intro_h: "進め方", label_problem: "お題", label_q: "4つの質問に、5段階（かなりA・ややA・同じ・ややB・かなりB）で答えます",
+    ql_q1: "新しさ", ql_q3: "実現性", ql_q4: "魅力", ql_q2: "総合",
+    def_q1: "どちらが、より見たことのない発想か", def_q3: "どちらが、実際に成り立ちそうか",
+    def_q4: "どちらの話を、もっと詳しく聞いてみたいか", def_q2: "どちらが、より良いアイデアだと思うか",
+    tip1: "正解はありません。差がないと感じたら「同じ」を選んでください。", tip2: "文章のうまさではなく、アイデアの中身で選んでください。",
+    tip3: "途中に、選ぶ案を指定する確認問題が2つあります。", tip4: "", btn_practice: "練習する",
+    tag_a: "案A", tag_b: "案B",
+    qt_q1: "より見たことのない発想なのは？", qt_q3: "実際に成り立ちそうなのは？", qt_q4: "もっと詳しく聞いてみたいのは？", qt_q2: "より良いアイデアだと思うのは？",
+    opt_A2: "かなりA", opt_A1: "ややA", opt_0: "同じ", opt_B1: "ややB", opt_B2: "かなりB",
+    aria_A2: "案Aがかなり良い", aria_A1: "案Aがやや良い", aria_0: "同じくらい", aria_B1: "案Bがやや良い", aria_B2: "案Bがかなり良い",
+    btn_next: "次へ", after_h: "練習はここまでです", after_p: "本番は{n}組です。途中で閉じても、同じ端末で開き直せば続きから再開できます。", btn_main: "本番へ",
+    survey_h: "最後に少しだけ", seen_q: "読んだ案の中に、前に見たことのある案はありましたか", seen_no: "なかった", seen_yes: "あった", unsure: "わからない",
+    prior_q: "この調査の第1回（同じ形式のアイデア比較）にも参加しましたか", prior_yes: "参加した", prior_no: "参加していない",
+    lab_q: "大西研究室のメンバーですか", yes: "はい", no: "いいえ",
+    exp_q: "ビジネスコンテストやアイデア審査に関わったことはありますか", exp_yes: "ある", exp_no: "ない",
+    comment: "<b>感想</b><span class=\"muted\">（任意）</span>",
+    who_q: "完了の確認のため、お名前と年齢を入力してください",
+    who_note: "依頼した方が終えたかを確かめるためだけに使います。回答とは別の場所に、日付だけを付けて保存し、どの回答の方かは分からないようにしています。",
+    name: "お名前（ニックネーム可）", age: "年齢", btn_send: "送信",
+    done_h: "ありがとうございました", done_p: "回答を記録しました。完了の確認が必要な場合は、このコードをお伝えください。",
+    err_h: "接続できませんでした", err_p: "通信状況を確かめて、もう一度お試しください。ここまでの回答は端末に残っています。", btn_retry: "もう一度試す",
+    notice: "確認問題：この組は、4問すべて「{opt}」を選んでください", left: "あと{n}問です", practice: "練習", complete: "完了",
+    preparing: "準備しています…", sending: "送信しています…", send_fail: "送信できませんでした。通信状況を確かめて、もう一度押してください。"
+  },
+  en: {
+    bar_name: "Idea Comparison Survey", btn_problem: "Show the theme", demo_chip: "Preview: answers are not saved",
+    title: "Idea Comparison Survey", lead: "Read two business ideas side by side and choose the one you think is better.",
+    f_content_dt: "Task", f_content_dd: "<b>{n} pairs</b> of ideas (plus 1 practice pair)",
+    f_time_dt: "Time", f_time_dd: "About 12 minutes",
+    f_answer_dt: "Answers", f_answer_dd: "Used only as statistics in research presentations. You may stop at any time. At the end we ask for your name (a nickname is fine) and age to confirm completion; they are stored separately and never linked to your answers.",
+    f_contact_dt: "Contact", agree: "I am 18 or older and agree to take part in this survey", btn_start: "Start",
+    intro_h: "How it works", label_problem: "Theme", label_q: "Answer 4 questions on a 5-point scale (A ++, A +, =, B +, B ++)",
+    ql_q1: "Novelty", ql_q3: "Feasibility", ql_q4: "Appeal", ql_q2: "Overall",
+    def_q1: "Which idea is less like anything you have seen before?", def_q3: "Which seems more workable in practice?",
+    def_q4: "Which would you like to hear more about?", def_q2: "Which do you think is the better idea?",
+    tip1: "There are no right answers. If you see no difference, choose “=”. “A ++” means A is much better, “A +” slightly better.",
+    tip2: "Judge the content of the idea, not the quality of the writing.",
+    tip3: "Two check questions will tell you which option to choose.",
+    tip4: "The ideas were originally written in Japanese and have been translated into English.", btn_practice: "Practice",
+    tag_a: "Idea A", tag_b: "Idea B",
+    qt_q1: "Less like anything seen before?", qt_q3: "More workable in practice?", qt_q4: "Want to hear more about?", qt_q2: "Better idea overall?",
+    opt_A2: "A ++", opt_A1: "A +", opt_0: "=", opt_B1: "B +", opt_B2: "B ++",
+    aria_A2: "A is much better", aria_A1: "A is slightly better", aria_0: "About the same", aria_B1: "B is slightly better", aria_B2: "B is much better",
+    btn_next: "Next", after_h: "Practice is over", after_p: "The main part has {n} pairs. If you close the page, you can resume on the same device and browser.", btn_main: "Start",
+    survey_h: "A few last questions", seen_q: "Had you seen any of these ideas before?", seen_no: "No", seen_yes: "Yes", unsure: "Not sure",
+    prior_q: "Did you also take part in the first round of this survey (the same kind of idea comparison)?", prior_yes: "Yes", prior_no: "No",
+    lab_q: "Are you a member of the Onishi Laboratory?", yes: "Yes", no: "No",
+    exp_q: "Have you ever been involved in a business contest or idea review (as a judge or entrant)?", exp_yes: "Yes", exp_no: "No",
+    comment: "<b>Comments</b><span class=\"muted\"> (optional)</span>",
+    who_q: "To confirm completion, please enter your name and age",
+    who_note: "Used only to check that the people we asked have finished. Stored separately with the date only, so it cannot be linked to your answers.",
+    name: "Name (nickname OK)", age: "Age", btn_send: "Submit",
+    done_h: "Thank you", done_p: "Your answers have been recorded. If you need to confirm completion, please send us this code.",
+    err_h: "Could not connect", err_p: "Please check your connection and try again. Your answers so far are kept on this device.", btn_retry: "Try again",
+    notice: "Check question: for this pair, choose “{opt}” for all 4 questions", left: "{n} more to answer", practice: "Practice", complete: "Done",
+    preparing: "Preparing…", sending: "Sending…", send_fail: "Could not send. Please check your connection and press the button again."
+  },
+  zh: {
+    bar_name: "创意比较调查", btn_problem: "查看题目", demo_chip: "预览：不会保存回答",
+    title: "创意比较调查", lead: "请阅读并比较两个商业创意，选择你认为更好的一个。",
+    f_content_dt: "内容", f_content_dd: "共 <b>{n}组</b> 创意（开始前有1组练习）",
+    f_time_dt: "时间", f_time_dd: "约12分钟",
+    f_answer_dt: "回答", f_answer_dd: "仅以统计形式用于研究发表。可以随时中途退出。最后为确认完成，会询问你的姓名（可用昵称）和年龄，但它们与回答分开保存，不会相互关联。",
+    f_contact_dt: "联系方式", agree: "我已满18岁，同意参与本调查", btn_start: "开始",
+    intro_h: "说明", label_problem: "题目", label_q: "用5个等级回答4个问题（明显A・稍A・相同・稍B・明显B）",
+    ql_q1: "新颖性", ql_q3: "可行性", ql_q4: "吸引力", ql_q2: "综合",
+    def_q1: "哪个是更前所未见的想法", def_q3: "哪个看起来更能实际成立",
+    def_q4: "哪个让你更想详细了解", def_q2: "你认为哪个是更好的创意",
+    tip1: "没有正确答案。如果觉得没有差别，请选择“相同”。", tip2: "请根据创意的内容，而不是文笔来判断。",
+    tip3: "中途有2道指定选项的确认题。", tip4: "这些创意原文为日语，已翻译成中文。", btn_practice: "练习",
+    tag_a: "方案A", tag_b: "方案B",
+    qt_q1: "哪个想法更前所未见？", qt_q3: "哪个更能实际成立？", qt_q4: "哪个更想详细了解？", qt_q2: "哪个是更好的创意？",
+    opt_A2: "明显A", opt_A1: "稍A", opt_0: "相同", opt_B1: "稍B", opt_B2: "明显B",
+    aria_A2: "A明显更好", aria_A1: "A稍好", aria_0: "差不多", aria_B1: "B稍好", aria_B2: "B明显更好",
+    btn_next: "下一组", after_h: "练习结束", after_p: "正式部分共{n}组。中途关闭后，用同一设备和浏览器重新打开即可继续。", btn_main: "开始正式部分",
+    survey_h: "最后几个问题", seen_q: "读到的创意中，有没有以前见过的？", seen_no: "没有", seen_yes: "有", unsure: "不确定",
+    prior_q: "你是否也参加了本调查的第1轮（同样形式的创意比较）？", prior_yes: "参加了", prior_no: "没有参加",
+    lab_q: "你是大西研究室的成员吗？", yes: "是", no: "不是",
+    exp_q: "你是否曾以评委或参赛者身份参与过商业大赛或创意评审？", exp_yes: "有", exp_no: "没有",
+    comment: "<b>感想</b><span class=\"muted\">（选填）</span>",
+    who_q: "为确认完成，请输入姓名和年龄",
+    who_note: "仅用于确认受邀者是否已完成。与回答分开保存，只附带日期，无法知道对应哪份回答。",
+    name: "姓名（可用昵称）", age: "年龄", btn_send: "提交",
+    done_h: "谢谢参与", done_p: "已记录你的回答。如需确认完成，请告知此代码。",
+    err_h: "无法连接", err_p: "请检查网络后重试。目前的回答已保存在此设备上。", btn_retry: "重试",
+    notice: "确认题：本组的4个问题都请选择“{opt}”", left: "还剩{n}题", practice: "练习", complete: "完成",
+    preparing: "准备中…", sending: "提交中…", send_fail: "提交失败。请检查网络后再按一次。"
+  },
+  id: {
+    bar_name: "Survei Perbandingan Ide", btn_problem: "Lihat tema", demo_chip: "Pratinjau: jawaban tidak disimpan",
+    title: "Survei Perbandingan Ide", lead: "Bacalah dua ide bisnis dan pilih yang menurut Anda lebih baik.",
+    f_content_dt: "Isi", f_content_dd: "<b>{n} pasang</b> ide (ditambah 1 pasang latihan)",
+    f_time_dt: "Waktu", f_time_dd: "Sekitar 12 menit",
+    f_answer_dt: "Jawaban", f_answer_dd: "Hanya digunakan sebagai statistik dalam presentasi penelitian. Anda boleh berhenti kapan saja. Di akhir kami menanyakan nama (boleh nama panggilan) dan usia untuk konfirmasi; data ini disimpan terpisah dan tidak dihubungkan dengan jawaban Anda.",
+    f_contact_dt: "Kontak", agree: "Saya berusia 18 tahun ke atas dan setuju mengikuti survei ini", btn_start: "Mulai",
+    intro_h: "Cara mengisi", label_problem: "Tema", label_q: "Jawab 4 pertanyaan dengan skala 5 (A ++, A +, =, B +, B ++)",
+    ql_q1: "Kebaruan", ql_q3: "Kelayakan", ql_q4: "Daya tarik", ql_q2: "Keseluruhan",
+    def_q1: "Mana ide yang paling belum pernah Anda lihat", def_q3: "Mana yang tampak lebih bisa berjalan nyata",
+    def_q4: "Mana yang ingin Anda ketahui lebih lanjut", def_q2: "Mana yang menurut Anda ide yang lebih baik",
+    tip1: "Tidak ada jawaban benar. Jika tidak ada perbedaan, pilih “=”. “A ++” berarti A jauh lebih baik, “A +” sedikit lebih baik.",
+    tip2: "Nilailah isi idenya, bukan kualitas tulisannya.",
+    tip3: "Ada 2 pertanyaan pengecekan yang menentukan pilihan yang harus dipilih.",
+    tip4: "Ide-ide ini aslinya ditulis dalam bahasa Jepang dan telah diterjemahkan ke bahasa Indonesia.", btn_practice: "Latihan",
+    tag_a: "Ide A", tag_b: "Ide B",
+    qt_q1: "Lebih belum pernah ada?", qt_q3: "Lebih bisa berjalan nyata?", qt_q4: "Ingin tahu lebih lanjut?", qt_q2: "Ide yang lebih baik?",
+    opt_A2: "A ++", opt_A1: "A +", opt_0: "=", opt_B1: "B +", opt_B2: "B ++",
+    aria_A2: "A jauh lebih baik", aria_A1: "A sedikit lebih baik", aria_0: "Kurang lebih sama", aria_B1: "B sedikit lebih baik", aria_B2: "B jauh lebih baik",
+    btn_next: "Lanjut", after_h: "Latihan selesai", after_p: "Bagian utama terdiri dari {n} pasang. Jika halaman ditutup, Anda dapat melanjutkan di perangkat dan peramban yang sama.", btn_main: "Mulai",
+    survey_h: "Beberapa pertanyaan terakhir", seen_q: "Apakah ada ide yang pernah Anda lihat sebelumnya?", seen_no: "Tidak ada", seen_yes: "Ada", unsure: "Tidak yakin",
+    prior_q: "Apakah Anda juga mengikuti putaran pertama survei ini (perbandingan ide dengan format yang sama)?", prior_yes: "Ikut", prior_no: "Tidak ikut",
+    lab_q: "Apakah Anda anggota Laboratorium Onishi?", yes: "Ya", no: "Tidak",
+    exp_q: "Pernahkah Anda terlibat dalam kompetisi bisnis atau penilaian ide (sebagai juri atau peserta)?", exp_yes: "Pernah", exp_no: "Tidak pernah",
+    comment: "<b>Komentar</b><span class=\"muted\"> (opsional)</span>",
+    who_q: "Untuk konfirmasi, masukkan nama dan usia Anda",
+    who_note: "Hanya dipakai untuk memastikan orang yang kami minta sudah selesai. Disimpan terpisah hanya dengan tanggal, sehingga tidak dapat dihubungkan dengan jawaban Anda.",
+    name: "Nama (boleh nama panggilan)", age: "Usia", btn_send: "Kirim",
+    done_h: "Terima kasih", done_p: "Jawaban Anda telah tercatat. Jika perlu konfirmasi, kirimkan kode ini kepada kami.",
+    err_h: "Tidak dapat terhubung", err_p: "Periksa koneksi Anda lalu coba lagi. Jawaban sejauh ini tersimpan di perangkat ini.", btn_retry: "Coba lagi",
+    notice: "Pertanyaan pengecekan: untuk pasangan ini, pilih “{opt}” pada keempat pertanyaan", left: "{n} lagi", practice: "Latihan", complete: "Selesai",
+    preparing: "Menyiapkan…", sending: "Mengirim…", send_fail: "Gagal mengirim. Periksa koneksi lalu tekan tombol lagi."
+  }
+};
+</script>
 <script>
 (function () {
   "use strict";
@@ -413,11 +564,11 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
   }
   var api = API_URL ? {
     start: function (cid) { return post({action: "start", client_id: cid, ua: navigator.userAgent, screen: screen.width + "x" + screen.height,
-                                          prior: load("hep_done_phases", []).join(",")}); },
+                                          prior: load("hep_done_phases", []).join(","), lang: LANG}); },
     record: function (row) { return post({action: "record", row: row}); },
     finish: function (sid, survey, who) { return post({action: "finish", session_id: sid, survey: survey, participant: who}); }
   } : GAS ? {
-    start: function (cid) { return call("startSession", cid, navigator.userAgent, screen.width + "x" + screen.height, load("hep_done_phases", []).join(",")); },
+    start: function (cid) { return call("startSession", cid, navigator.userAgent, screen.width + "x" + screen.height, load("hep_done_phases", []).join(","), LANG); },
     record: function (row) { return call("recordTrial", row); },
     finish: function (sid, survey, who) { return call("finishSession", sid, survey, who); }
   } : {
@@ -432,6 +583,30 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
 
   // ---- 端末に残すもの（読めなくても動くように try で囲む）
   function load(k, d) { try { var v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }
+
+  // ---- 言語。同意したあとは変えない（回答と一緒に記録する）
+  var LANG = load("hep_lang", "ja");
+  if (!window.I18N || !window.I18N[LANG]) LANG = "ja";
+  var N = 19;
+  function t(k) { var d = window.I18N || {}; var v = d[LANG] && d[LANG][k]; return v != null ? v : (d.ja ? d.ja[k] : k); }
+  function itemText(c) { var it = S.items[c]; return LANG !== "ja" && it.tr && it.tr[LANG] ? it.tr[LANG] : it; }
+  function problem() { return LANG !== "ja" && S.problem_tr && S.problem_tr[LANG] ? S.problem_tr[LANG] : S.problem; }
+  function applyLang() {
+    document.documentElement.lang = LANG === "zh" ? "zh-Hans" : LANG;
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      var v = t(el.getAttribute("data-i18n"));
+      if (el.getAttribute("data-html")) el.innerHTML = v.replace("{n}", N); else el.textContent = v.replace("{n}", N);
+    });
+    document.querySelectorAll(".opt").forEach(function (o) {
+      var sd = o.getAttribute("data-side");
+      o.textContent = t("opt_" + sd); o.setAttribute("aria-label", t("aria_" + sd));
+    });
+    var tip = document.getElementById("tip4"); if (tip) tip.hidden = !t("tip4");
+    document.querySelectorAll(".lang").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-lang") === LANG ? "true" : "false"); });
+  }
+  document.querySelectorAll(".lang").forEach(function (b) {
+    b.addEventListener("click", function () { LANG = b.getAttribute("data-lang"); save("hep_lang", LANG); applyLang(); });
+  });
   function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   var cid = load("hep_client", null);
   if (!cid) { cid = "c" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); save("hep_client", cid); }
@@ -452,7 +627,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
   }
   function setProgress() {
     $("prog").hidden = false;
-    if (practice) { $("prog-num").textContent = "練習"; $("prog-fill").style.width = "0%"; return; }
+    if (practice) { $("prog-num").textContent = t("practice"); $("prog-fill").style.width = "0%"; return; }
     var n = S ? S.packet.trials.length : 0;
     $("prog-num").textContent = (idx + 1) + " / " + n;
     $("prog-fill").style.width = (100 * idx / n) + "%";
@@ -481,11 +656,11 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
 
   // ---- 1組を表示する
   function render(a, b, chk) {
-    var A = S.items[a], B = S.items[b];
+    var A = itemText(a), B = itemText(b);
     $("ta").textContent = A.t; $("ba").textContent = A.b;
     $("tb").textContent = B.t; $("bb").textContent = B.b;
     $("notice").hidden = !chk;
-    if (chk) $("notice").textContent = "確認問題：この組は、4問すべて「かなり" + chk + "」を選んでください";
+    if (chk) $("notice").textContent = t("notice").replace("{opt}", t("opt_" + chk + "2"));
     document.querySelectorAll(".opt").forEach(function (o) { o.setAttribute("aria-pressed", "false"); });
     $("btn-next").disabled = true;
     $("trial-msg").textContent = "";
@@ -510,7 +685,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
       var ready = cur.q1 && cur.q2 && cur.q3 && cur.q4;
       $("btn-next").disabled = !ready;
       var left = ["q1", "q2", "q3", "q4"].filter(function (k) { return !cur[k]; }).length;
-      $("trial-msg").textContent = ready ? "" : "あと" + left + "問です";
+      $("trial-msg").textContent = ready ? "" : t("left").replace("{n}", left);
     });
   });
 
@@ -528,7 +703,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
                   rt_ms: rt, q1_ms: cur.q1_ms, q2_ms: cur.q2_ms, q3_ms: cur.q3_ms, q4_ms: cur.q4_ms,
                   changes: cur.changes,
                   chk: cur.chk, chk_pass: cur.chk ? [cur.q1, cur.q2, cur.q3, cur.q4].every(function (x) { return x === cur.chk + "2"; }) : "",
-                  shown_at: cur.shown_at});
+                  shown_at: cur.shown_at, lang: LANG});
     save("hep_pending", pending);
     flush();
     idx++;
@@ -537,7 +712,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
   });
 
   function next() {
-    if (idx >= S.packet.trials.length) { $("prog-fill").style.width = "100%"; $("prog-num").textContent = "完了"; show("s-survey"); return; }
+    if (idx >= S.packet.trials.length) { $("prog-fill").style.width = "100%"; $("prog-num").textContent = t("complete"); show("s-survey"); return; }
     var t = S.packet.trials[idx];
     render(t.a, t.b, t.chk);
   }
@@ -548,14 +723,14 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
 
   function begin(resume) {
     $("btn-consent").disabled = true;
-    $("consent-msg").textContent = "準備しています…";
+    $("consent-msg").textContent = t("preparing");
     return api.start(cid).then(function (s) {
       S = s;
       var n = s.packet.trials.length;
-      $("n-trials").textContent = n; $("n-trials-2").textContent = n;
+      N = n; applyLang();
       $("prior-q").hidden = s.phase !== "stage2";
-      $("problem-intro").textContent = ""; $("problem-intro").appendChild(problemHtml(s.problem));
-      $("problem-ref").textContent = ""; $("problem-ref").appendChild(problemHtml(s.problem));
+      $("problem-intro").textContent = ""; $("problem-intro").appendChild(problemHtml(problem()));
+      $("problem-ref").textContent = ""; $("problem-ref").appendChild(problemHtml(problem()));
       var local = load("hep_progress", null);
       var doneServer = s.done.length ? Math.max.apply(null, s.done) + 1 : 0;
       var doneLocal = local && local.session === s.session ? local.idx : 0;
@@ -599,7 +774,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
   $("p-age").addEventListener("input", surveyReady);
   $("btn-finish").addEventListener("click", function () {
     $("btn-finish").disabled = true;
-    $("survey-msg").textContent = "送信しています…";
+    $("survey-msg").textContent = t("sending");
     var survey = {seen_before: document.querySelector('input[name="seen"]:checked').value,
                   experience: document.querySelector('input[name="exp"]:checked').value,
                   lab_member: document.querySelector('input[name="lab"]:checked').value,
@@ -608,13 +783,13 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
     var who = {name: $("p-name").value.trim(), age: parseInt($("p-age").value, 10)};
     flush().then(function () { return api.finish(S.session, survey, who); }).then(function (r) {
       $("code").textContent = r.code;
-      $("debrief").textContent = S.debrief;
+      $("debrief").textContent = (S.debrief_tr && S.debrief_tr[LANG]) || S.debrief;
       save("hep_progress", null); save("hep_consented", null);
       var dp = load("hep_done_phases", []); if (dp.indexOf(S.phase) < 0) { dp.push(S.phase); save("hep_done_phases", dp); }
       $("prog").hidden = true;
       show("s-done");
     }, function () {
-      $("survey-msg").textContent = "送信できませんでした。通信状況を確かめて、もう一度押してください。";
+      $("survey-msg").textContent = t("send_fail");
       $("btn-finish").disabled = false;
     });
   });
@@ -622,6 +797,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
   // ---- 起動
   var STUDY_INFO = LIVE ? null : window.DEMO_STUDY;
   $("contact").textContent = (STUDY_INFO && STUDY_INFO.contact) || window.STUDY_CONTACT || "（実施者の連絡先）";
+  applyLang();
   $("demo-chip").hidden = LIVE;
   if (GAS && !API_URL) call("contact").then(function (c) { $("contact").textContent = c; }, function () {});
   if (LIVE && load("hep_consented", null)) begin(true);   // 同意済みで途中だった人は、そのまま続きへ
