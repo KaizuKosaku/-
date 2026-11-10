@@ -661,7 +661,7 @@ window.I18N = {
 
   function problemHtml(p) {
     var box = document.createDocumentFragment();
-    var t = document.createElement("p"); t.className = "problem-title"; t.textContent = p.title; box.appendChild(t);
+    var h = document.createElement("p"); h.className = "problem-title"; h.textContent = p.title; box.appendChild(h);
     p.body.forEach(function (x) { var e = document.createElement("p"); e.textContent = x; box.appendChild(e); });
     return box;
   }
@@ -675,8 +675,19 @@ window.I18N = {
       pending.shift(); save("hep_pending", pending); flushing = false;
       return flush();
     }, function () {
-      flushing = false;
-      return new Promise(function (res) { setTimeout(res, 3000); }).then(flush);
+      // 待っているあいだも送信中として扱い、同じ回答を二重に送らない
+      return new Promise(function (res) { setTimeout(res, 3000); }).then(function () { flushing = false; return flush(); });
+    });
+  }
+
+  function flushAll(ms) {
+    var until = Date.now() + ms;
+    return new Promise(function (res, rej) {
+      (function loop() {
+        if (!pending.length) return res();
+        if (Date.now() > until) return rej(new Error("timeout"));
+        flush(); setTimeout(loop, 500);
+      })();
     });
   }
 
@@ -719,11 +730,11 @@ window.I18N = {
     if (!(cur.q1 && cur.q2 && cur.q3 && cur.q4)) return;
     var rt = Math.round(performance.now() - cur.t0);
     if (practice) { practice = false; $("prog").hidden = true; show("s-after-practice"); return; }
-    var t = S.packet.trials[idx];
+    var tr = S.packet.trials[idx];
     // 選んだ側の案。「同じ」は "=" と記録する
     var pick = function (side) { return side === "0" ? "=" : side.charAt(0) === "A" ? cur.left : cur.right; };
-    pending.push({session_id: S.session, packet_id: S.packet.id, index: idx, pair_id: t.p,
-                  kind: t.chk ? "attention" : "", left: cur.left, right: cur.right,
+    pending.push({session_id: S.session, packet_id: S.packet.id, index: idx, pair_id: tr.p,
+                  kind: tr.chk ? "attention" : "", left: cur.left, right: cur.right,
                   q1: pick(cur.q1), q2: pick(cur.q2), q3: pick(cur.q3), q4: pick(cur.q4),
                   q1_side: cur.q1, q2_side: cur.q2, q3_side: cur.q3, q4_side: cur.q4,
                   rt_ms: rt, q1_ms: cur.q1_ms, q2_ms: cur.q2_ms, q3_ms: cur.q3_ms, q4_ms: cur.q4_ms,
@@ -739,8 +750,8 @@ window.I18N = {
 
   function next() {
     if (idx >= S.packet.trials.length) { $("prog-fill").style.width = "100%"; $("prog-num").textContent = t("complete"); show("s-survey"); return; }
-    var t = S.packet.trials[idx];
-    render(t.a, t.b, t.chk);
+    var tr = S.packet.trials[idx];
+    render(tr.a, tr.b, tr.chk);
   }
 
   // ---- 同意 → 束を受け取る
@@ -750,7 +761,12 @@ window.I18N = {
   function begin(resume) {
     $("btn-consent").disabled = true;
     $("consent-msg").textContent = t("preparing");
-    return api.start(cid).then(function (s) {
+    var failed = function () {
+      $("consent-msg").textContent = "";
+      consentReady();
+      show("s-error");
+    };
+    return api.start(cid).then(function (s) { try {
       S = s;
       var n = s.packet.trials.length;
       N = n; applyLang();
@@ -764,11 +780,7 @@ window.I18N = {
       save("hep_consented", s.session);
       flush();
       if (idx > 0) next(); else show("s-intro");
-    }, function () {
-      $("consent-msg").textContent = "";
-      consentReady();
-      show("s-error");
-    });
+    } catch (e) { failed(); } }, failed);
   }
   $("btn-consent").addEventListener("click", function () { begin(false); });
   $("btn-retry").addEventListener("click", function () {
@@ -807,7 +819,7 @@ window.I18N = {
                   prior_stage: $("prior-q").hidden ? "" : document.querySelector('input[name="prior"]:checked').value,
                   comment: $("comment").value};
     var who = {name: $("p-name").value.trim(), age: parseInt($("p-age").value, 10)};
-    flush().then(function () { return api.finish(S.session, survey, who); }).then(function (r) {
+    flushAll(30000).then(function () { return api.finish(S.session, survey, who); }).then(function (r) {
       $("code").textContent = r.code;
       $("debrief").textContent = (S.debrief_tr && S.debrief_tr[LANG]) || S.debrief;
       save("hep_progress", null); save("hep_consented", null);
