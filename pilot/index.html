@@ -141,15 +141,15 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .card h3 { font-family: var(--font-body); font-size: 1.0625rem; font-weight: 700; line-height: 1.5; }
 .card p { font-size: 0.96875rem; line-height: 1.8; overflow-wrap: anywhere; }
 .qs { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
-/* 4問を1枚の表に。左に問い、右に 案A／案B */
+/* 4問を1枚の表に。左に問い、右に5段階（かなりA … かなりB）。左右は同じ見た目にし、どちらにも寄せない */
 .qgrid { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
 .q { display: grid; grid-template-columns: 1fr auto; gap: 8px 16px; align-items: center; padding: 5px 6px 5px 16px; }
 .q + .q { border-top: 1px solid var(--line); }
 .qt { min-width: 0; display: flex; align-items: baseline; gap: 12px; font-size: 0.96875rem; }
 .ql { font-family: var(--font-display); font-weight: 700; color: var(--accent); white-space: nowrap; min-width: 3.5em; }
-.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 220px; }
+.seg { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; width: 360px; }
 .opt {
-  font: inherit; font-weight: 700; min-height: 38px; padding: 5px 12px; border-radius: 8px; cursor: pointer;
+  font: inherit; font-size: 0.875rem; font-weight: 700; min-height: 38px; padding: 4px 2px; border-radius: 8px; cursor: pointer; white-space: nowrap;
   border: 1.5px solid var(--line); background: var(--bg); color: var(--ink);
 }
 .opt[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
@@ -176,9 +176,9 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
 
 @media (max-width: 760px) {
   .pair { grid-template-columns: 1fr; }
-  .seg { width: 132px; }
-  .qt { flex-direction: column; gap: 0; }
-  .q { padding: 6px 6px 6px 12px; gap: 8px; }
+  .q { grid-template-columns: 1fr; padding: 8px 10px; gap: 6px; }
+  .seg { width: 100%; }
+  .opt { font-size: 0.8125rem; }
   .bar-name { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -226,7 +226,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
       <div class="problem" id="problem-intro"></div>
     </div>
     <div class="stack-s">
-      <p class="label">4つの質問に、案Aか案Bで答えます</p>
+      <p class="label">4つの質問に、5段階（かなりA・ややA・同じ・ややB・かなりB）で答えます</p>
       <div class="qdef">
         <span class="qn">新しさ</span><span>どちらが、より見たことのない発想か</span>
         <span class="qn">実現性</span><span>どちらが、実際に成り立ちそうか</span>
@@ -235,7 +235,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
       </div>
     </div>
     <ul class="tips">
-      <li>正解はありません。迷ったら、少しでも当てはまるほうを選んでください。</li>
+      <li>正解はありません。差がないと感じたら「同じ」を選んでください。</li>
       <li>文章のうまさではなく、アイデアの中身で選んでください。</li>
       <li>途中に、選ぶ案を指定する確認問題が2つあります。</li>
     </ul>
@@ -268,29 +268,41 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
           <div class="q" role="group" aria-label="新しさ">
             <span class="qt"><b class="ql">新しさ</b><span>より見たことのない発想なのは？</span></span>
             <span class="seg">
-              <button type="button" class="opt" data-q="q1" data-side="A" aria-pressed="false">案A</button>
-              <button type="button" class="opt" data-q="q1" data-side="B" aria-pressed="false">案B</button>
+              <button type="button" class="opt" data-q="q1" data-side="A2" aria-pressed="false" aria-label="案Aがかなり良い">かなりA</button>
+              <button type="button" class="opt" data-q="q1" data-side="A1" aria-pressed="false" aria-label="案Aがやや良い">ややA</button>
+              <button type="button" class="opt mid" data-q="q1" data-side="0" aria-pressed="false" aria-label="同じくらい">同じ</button>
+              <button type="button" class="opt" data-q="q1" data-side="B1" aria-pressed="false" aria-label="案Bがやや良い">ややB</button>
+              <button type="button" class="opt" data-q="q1" data-side="B2" aria-pressed="false" aria-label="案Bがかなり良い">かなりB</button>
             </span>
           </div>
           <div class="q" role="group" aria-label="実現性">
             <span class="qt"><b class="ql">実現性</b><span>実際に成り立ちそうなのは？</span></span>
             <span class="seg">
-              <button type="button" class="opt" data-q="q3" data-side="A" aria-pressed="false">案A</button>
-              <button type="button" class="opt" data-q="q3" data-side="B" aria-pressed="false">案B</button>
+              <button type="button" class="opt" data-q="q3" data-side="A2" aria-pressed="false" aria-label="案Aがかなり良い">かなりA</button>
+              <button type="button" class="opt" data-q="q3" data-side="A1" aria-pressed="false" aria-label="案Aがやや良い">ややA</button>
+              <button type="button" class="opt mid" data-q="q3" data-side="0" aria-pressed="false" aria-label="同じくらい">同じ</button>
+              <button type="button" class="opt" data-q="q3" data-side="B1" aria-pressed="false" aria-label="案Bがやや良い">ややB</button>
+              <button type="button" class="opt" data-q="q3" data-side="B2" aria-pressed="false" aria-label="案Bがかなり良い">かなりB</button>
             </span>
           </div>
           <div class="q" role="group" aria-label="魅力">
             <span class="qt"><b class="ql">魅力</b><span>もっと詳しく聞いてみたいのは？</span></span>
             <span class="seg">
-              <button type="button" class="opt" data-q="q4" data-side="A" aria-pressed="false">案A</button>
-              <button type="button" class="opt" data-q="q4" data-side="B" aria-pressed="false">案B</button>
+              <button type="button" class="opt" data-q="q4" data-side="A2" aria-pressed="false" aria-label="案Aがかなり良い">かなりA</button>
+              <button type="button" class="opt" data-q="q4" data-side="A1" aria-pressed="false" aria-label="案Aがやや良い">ややA</button>
+              <button type="button" class="opt mid" data-q="q4" data-side="0" aria-pressed="false" aria-label="同じくらい">同じ</button>
+              <button type="button" class="opt" data-q="q4" data-side="B1" aria-pressed="false" aria-label="案Bがやや良い">ややB</button>
+              <button type="button" class="opt" data-q="q4" data-side="B2" aria-pressed="false" aria-label="案Bがかなり良い">かなりB</button>
             </span>
           </div>
           <div class="q" role="group" aria-label="総合">
             <span class="qt"><b class="ql">総合</b><span>より良いアイデアだと思うのは？</span></span>
             <span class="seg">
-              <button type="button" class="opt" data-q="q2" data-side="A" aria-pressed="false">案A</button>
-              <button type="button" class="opt" data-q="q2" data-side="B" aria-pressed="false">案B</button>
+              <button type="button" class="opt" data-q="q2" data-side="A2" aria-pressed="false" aria-label="案Aがかなり良い">かなりA</button>
+              <button type="button" class="opt" data-q="q2" data-side="A1" aria-pressed="false" aria-label="案Aがやや良い">ややA</button>
+              <button type="button" class="opt mid" data-q="q2" data-side="0" aria-pressed="false" aria-label="同じくらい">同じ</button>
+              <button type="button" class="opt" data-q="q2" data-side="B1" aria-pressed="false" aria-label="案Bがやや良い">ややB</button>
+              <button type="button" class="opt" data-q="q2" data-side="B2" aria-pressed="false" aria-label="案Bがかなり良い">かなりB</button>
             </span>
           </div>
         </div>
@@ -318,6 +330,21 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
         <label><input type="radio" name="seen" value="no" id="seen-no">なかった</label>
         <label><input type="radio" name="seen" value="yes" id="seen-yes">あった</label>
         <label><input type="radio" name="seen" value="unsure" id="seen-unsure">わからない</label>
+      </div>
+    </div>
+    <div class="stack-s" id="prior-q" hidden>
+      <p><b>この調査の第1回（同じ形式のアイデア比較）にも参加しましたか</b></p>
+      <div class="radios">
+        <label><input type="radio" name="prior" value="yes" id="prior-yes">参加した</label>
+        <label><input type="radio" name="prior" value="no" id="prior-no">参加していない</label>
+        <label><input type="radio" name="prior" value="unsure" id="prior-unsure">わからない</label>
+      </div>
+    </div>
+    <div class="stack-s">
+      <p><b>大西研究室のメンバーですか</b></p>
+      <div class="radios" id="lab">
+        <label><input type="radio" name="lab" value="yes" id="lab-yes">はい</label>
+        <label><input type="radio" name="lab" value="no" id="lab-no">いいえ</label>
       </div>
     </div>
     <div class="stack-s">
@@ -385,11 +412,12 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
     });
   }
   var api = API_URL ? {
-    start: function (cid) { return post({action: "start", client_id: cid, ua: navigator.userAgent, screen: screen.width + "x" + screen.height}); },
+    start: function (cid) { return post({action: "start", client_id: cid, ua: navigator.userAgent, screen: screen.width + "x" + screen.height,
+                                          prior: load("hep_done_phases", []).join(",")}); },
     record: function (row) { return post({action: "record", row: row}); },
     finish: function (sid, survey, who) { return post({action: "finish", session_id: sid, survey: survey, participant: who}); }
   } : GAS ? {
-    start: function (cid) { return call("startSession", cid, navigator.userAgent, screen.width + "x" + screen.height); },
+    start: function (cid) { return call("startSession", cid, navigator.userAgent, screen.width + "x" + screen.height, load("hep_done_phases", []).join(",")); },
     record: function (row) { return call("recordTrial", row); },
     finish: function (sid, survey, who) { return call("finishSession", sid, survey, who); }
   } : {
@@ -457,7 +485,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
     $("ta").textContent = A.t; $("ba").textContent = A.b;
     $("tb").textContent = B.t; $("bb").textContent = B.b;
     $("notice").hidden = !chk;
-    if (chk) $("notice").textContent = "確認問題：この組は、4問すべて「案" + chk + "」を選んでください";
+    if (chk) $("notice").textContent = "確認問題：この組は、4問すべて「かなり" + chk + "」を選んでください";
     document.querySelectorAll(".opt").forEach(function (o) { o.setAttribute("aria-pressed", "false"); });
     $("btn-next").disabled = true;
     $("trial-msg").textContent = "";
@@ -491,14 +519,15 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
     var rt = Math.round(performance.now() - cur.t0);
     if (practice) { practice = false; $("prog").hidden = true; show("s-after-practice"); return; }
     var t = S.packet.trials[idx];
-    var pick = function (side) { return side === "A" ? cur.left : cur.right; };
+    // 選んだ側の案。「同じ」は "=" と記録する
+    var pick = function (side) { return side === "0" ? "=" : side.charAt(0) === "A" ? cur.left : cur.right; };
     pending.push({session_id: S.session, packet_id: S.packet.id, index: idx, pair_id: t.p,
                   kind: t.chk ? "attention" : "", left: cur.left, right: cur.right,
                   q1: pick(cur.q1), q2: pick(cur.q2), q3: pick(cur.q3), q4: pick(cur.q4),
                   q1_side: cur.q1, q2_side: cur.q2, q3_side: cur.q3, q4_side: cur.q4,
                   rt_ms: rt, q1_ms: cur.q1_ms, q2_ms: cur.q2_ms, q3_ms: cur.q3_ms, q4_ms: cur.q4_ms,
                   changes: cur.changes,
-                  chk: cur.chk, chk_pass: cur.chk ? [cur.q1, cur.q2, cur.q3, cur.q4].every(function (x) { return x === cur.chk; }) : "",
+                  chk: cur.chk, chk_pass: cur.chk ? [cur.q1, cur.q2, cur.q3, cur.q4].every(function (x) { return x === cur.chk + "2"; }) : "",
                   shown_at: cur.shown_at});
     save("hep_pending", pending);
     flush();
@@ -524,6 +553,7 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
       S = s;
       var n = s.packet.trials.length;
       $("n-trials").textContent = n; $("n-trials-2").textContent = n;
+      $("prior-q").hidden = s.phase !== "stage2";
       $("problem-intro").textContent = ""; $("problem-intro").appendChild(problemHtml(s.problem));
       $("problem-ref").textContent = ""; $("problem-ref").appendChild(problemHtml(s.problem));
       var local = load("hep_progress", null);
@@ -559,7 +589,9 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
   // ---- 最後の質問 → 完了
   function surveyReady() {
     var age = parseInt($("p-age").value, 10);
-    $("btn-finish").disabled = !(document.querySelector('input[name="seen"]:checked') && document.querySelector('input[name="exp"]:checked')
+    var priorOk = $("prior-q").hidden || document.querySelector('input[name="prior"]:checked');
+    $("btn-finish").disabled = !(priorOk && document.querySelector('input[name="seen"]:checked') && document.querySelector('input[name="exp"]:checked')
+                                 && document.querySelector('input[name="lab"]:checked')
                                  && $("p-name").value.trim() && age >= 18 && age <= 120);
   }
   document.querySelectorAll('#s-survey input[type="radio"]').forEach(function (r) { r.addEventListener("change", surveyReady); });
@@ -570,12 +602,15 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
     $("survey-msg").textContent = "送信しています…";
     var survey = {seen_before: document.querySelector('input[name="seen"]:checked').value,
                   experience: document.querySelector('input[name="exp"]:checked').value,
+                  lab_member: document.querySelector('input[name="lab"]:checked').value,
+                  prior_stage: $("prior-q").hidden ? "" : document.querySelector('input[name="prior"]:checked').value,
                   comment: $("comment").value};
     var who = {name: $("p-name").value.trim(), age: parseInt($("p-age").value, 10)};
     flush().then(function () { return api.finish(S.session, survey, who); }).then(function (r) {
       $("code").textContent = r.code;
       $("debrief").textContent = S.debrief;
       save("hep_progress", null); save("hep_consented", null);
+      var dp = load("hep_done_phases", []); if (dp.indexOf(S.phase) < 0) { dp.push(S.phase); save("hep_done_phases", dp); }
       $("prog").hidden = true;
       show("s-done");
     }, function () {
