@@ -819,7 +819,7 @@ window.I18N = {
                   prior_stage: $("prior-q").hidden ? "" : document.querySelector('input[name="prior"]:checked').value,
                   comment: $("comment").value};
     var who = {name: $("p-name").value.trim(), age: parseInt($("p-age").value, 10)};
-    flushAll(30000).then(function () { return api.finish(S.session, survey, who); }).then(function (r) {
+    flushAll(120000).then(function () { return api.finish(S.session, survey, who); }).then(function (r) {
       $("code").textContent = r.code;
       $("debrief").textContent = (S.debrief_tr && S.debrief_tr[LANG]) || S.debrief;
       save("hep_progress", null); save("hep_consented", null);
