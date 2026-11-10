@@ -139,6 +139,8 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .task-head { display: flex; flex-direction: column; gap: 8px; }
 .task-head:has(> :not([hidden])) { margin-bottom: 12px; }
 .ref .problem { font-size: var(--step--1); }
+.bar-select { font: inherit; font-size: var(--step--1); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 3px 8px; max-width: 9.5em; }
+.bar-select:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .bar-btn { font: inherit; font-size: var(--step--1); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 14px; cursor: pointer; white-space: nowrap; }
 .bar-btn[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
 .bar-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
@@ -205,6 +207,9 @@ textarea { font: inherit; width: 100%; min-height: 84px; border: 1px solid var(-
       <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
       <span class="prog-num" id="prog-num"></span>
     </div>
+    <select class="bar-select" id="lang-bar" aria-label="Language" hidden>
+      <option value="ja">日本語</option><option value="en">English</option><option value="zh">中文</option><option value="id">Bahasa Indonesia</option>
+    </select>
     <button type="button" class="bar-btn" id="btn-problem" aria-controls="ref" aria-expanded="false" hidden data-i18n="btn_problem">お題を見る</button>
     <span class="demo-chip" id="demo-chip" hidden data-i18n="demo_chip">プレビュー：回答は保存されません</span>
   </div>
@@ -603,10 +608,30 @@ window.I18N = {
     });
     var tip = document.getElementById("tip4"); if (tip) tip.hidden = !t("tip4");
     document.querySelectorAll(".lang").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-lang") === LANG ? "true" : "false"); });
+    var sel = document.getElementById("lang-bar"); if (sel) sel.value = LANG;
   }
   document.querySelectorAll(".lang").forEach(function (b) {
     b.addEventListener("click", function () { LANG = b.getAttribute("data-lang"); save("hep_lang", LANG); applyLang(); });
   });
+  // 始めたあとも言語を変えられる。答えと進み具合はそのままで、文言と案の本文だけを切り替える
+  document.getElementById("lang-bar").addEventListener("change", function (e) {
+    LANG = e.target.value; save("hep_lang", LANG); applyLang(); refreshTexts();
+  });
+  function refreshTexts() {
+    if (!S) return;
+    $("problem-intro").textContent = ""; $("problem-intro").appendChild(problemHtml(problem()));
+    $("problem-ref").textContent = ""; $("problem-ref").appendChild(problemHtml(problem()));
+    if (cur && !$("s-trial").hidden) {
+      var A = itemText(cur.left), B = itemText(cur.right);
+      $("ta").textContent = A.t; $("ba").textContent = A.b; $("tb").textContent = B.t; $("bb").textContent = B.b;
+      if (cur.chk) $("notice").textContent = t("notice").replace("{opt}", t("opt_" + cur.chk + "2"));
+      var left = ["q1", "q2", "q3", "q4"].filter(function (k) { return !cur[k]; }).length;
+      $("trial-msg").textContent = left ? t("left").replace("{n}", left) : "";
+      if (cur.q1 === null && cur.q2 === null && cur.q3 === null && cur.q4 === null) $("trial-msg").textContent = "";
+    }
+    if (!$("s-trial").hidden || !$("s-after-practice").hidden) setProgress();
+    if (!$("s-done").hidden) $("debrief").textContent = (S.debrief_tr && S.debrief_tr[LANG]) || S.debrief;
+  }
   function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   var cid = load("hep_client", null);
   if (!cid) { cid = "c" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); save("hep_client", cid); }
@@ -623,6 +648,7 @@ window.I18N = {
   function show(id) {
     screens.forEach(function (s) { $(s).hidden = s !== id; });
     $("btn-problem").hidden = id !== "s-trial";
+    $("lang-bar").hidden = id === "s-consent";
     window.scrollTo(0, 0);
   }
   function setProgress() {
@@ -775,7 +801,7 @@ window.I18N = {
   $("btn-finish").addEventListener("click", function () {
     $("btn-finish").disabled = true;
     $("survey-msg").textContent = t("sending");
-    var survey = {seen_before: document.querySelector('input[name="seen"]:checked').value,
+    var survey = {lang_end: LANG, seen_before: document.querySelector('input[name="seen"]:checked').value,
                   experience: document.querySelector('input[name="exp"]:checked').value,
                   lab_member: document.querySelector('input[name="lab"]:checked').value,
                   prior_stage: $("prior-q").hidden ? "" : document.querySelector('input[name="prior"]:checked').value,
